@@ -21,6 +21,10 @@
 title: Pass The Cheese -- An Experiment with AI-driven development
 email: briangenisio@gmail.com
 description: This is an experiment. Can I build a production-ready web-based game using only AI? This blog will chronicle my journey
+domain: https://pass-the-cheese.github.io       # if you want to force HTTPS, specify the domain without the http at the start, e.g. example.com
+url: https://https://pass-the-cheese.github.io  # the base hostname and protocol for your site, e.g. http://example.com
+baseurl: //passthecheese.ai/
+
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: briangenisio
