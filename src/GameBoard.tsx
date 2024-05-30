@@ -1,22 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Dice from './Dice';
 
 interface GameBoardProps {
   numberOfPlayers: number;
+  scoreGoal: number;
 }
 
-export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps & { scoreGoal: number }) {
+export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps) {
+  const initialScores = useMemo(() => Array.from({ length: numberOfPlayers }, () => 0), [numberOfPlayers]);
   const [diceValues, setDiceValues] = useState(Array.from({ length: 6 }, () => 1));
   const [currentPlayer, setCurrentPlayer] = useState(1);
-  const [scores, setScores] = useState(Array.from({ length: numberOfPlayers }, () => 0));
+  const [scores, setScores] = useState(initialScores);
   const [gameOver, setGameOver] = useState(false);
 
   const rollDice = () => {
-    if (!gameOver) {
-      const newValues = Array.from({ length: 6 }, () => Math.floor(Math.random() * 6) + 1);
-      setDiceValues(newValues);
-      updateScore(newValues.reduce((acc, value) => acc + value, 0));
-    }
+    if (gameOver) return;
+    const newValues = Array.from({ length: 6 }, () => Math.floor(Math.random() * 6) + 1);
+    setDiceValues(newValues);
+    updateScore(newValues.reduce((acc, value) => acc + value, 0));
   };
 
   const updateScore = (totalNewValue: number) => {
