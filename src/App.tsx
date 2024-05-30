@@ -5,7 +5,8 @@ import GameBoard from './GameBoard';
 function App() {
   return (
     <div className="App">
-      <GameBoard numberOfPlayers={3} />
+      <GameBoard numberOfPlayers={3} scoreGoal={100} />
+
     </div>
   );
 }
