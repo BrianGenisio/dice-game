@@ -4,15 +4,8 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+## Whoami?
+My name is Brian Genisio.  I've been a software developer for well over 25 years and I've seen the industry change a lot in that time.  These days, I'm a Technical Engineering Manager at [Khan Academy](https://khanacademy.org) but I've worked at a lot of places in my career.  Checkout my [LinkedIn](https://www.linkedin.com/in/briangenisio/).
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
+## What am I doing?
+I'm building a game with AI.  And I'm blogging about it.
