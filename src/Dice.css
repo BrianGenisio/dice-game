@@ -1,28 +1,27 @@
 .dice {
-  width: 100px;
+  width: 100px; /* Size of the dice */
   height: 100px;
-  background-color: white;
-  border: 2px solid black;
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-}
-
-.face {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  width: 80%;
-  height: 80%;
+  align-items: center;
+  background-color: white; /* Dice background */
+  border: 2px solid black; /* Dice border */
+  position: relative;
+  cursor: pointer; /* Pointer cursor on hover */
 }
 
 .dot {
-  width: 20px;
+  width: 20px; /* Size of the dots */
   height: 20px;
-  border-radius: 50%;
-  background-color: black;
+  background-color: black; /* Dot color */
+  border-radius: 50%; /* Round dots */
+  position: absolute;
 }
 
-/* Example specific dot positions for each value */
-/* You would need to adjust the grid areas based on the dice value to position dots correctly */
+.top-left { top: 10%; left: 10%; }
+.top-right { top: 10%; right: 10%; }
+.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.bottom-left { bottom: 10%; left: 10%; }
+.bottom-right { bottom: 10%; right: 10%; }
+.middle-left { top: 50%; left: 10%; transform: translateY(-50%); }
+.middle-right { top: 50%; right: 10%; transform: translateY(-50%); }

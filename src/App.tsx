@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './App.css';
 import GameBoard from './GameBoard';
 
@@ -6,7 +5,7 @@ import GameBoard from './GameBoard';
 function App() {
   return (
     <div className="App">
-      <GameBoard />
+      <GameBoard numberOfPlayers={3} />
     </div>
   );
 }
