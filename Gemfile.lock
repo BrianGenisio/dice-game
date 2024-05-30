@@ -279,7 +279,7 @@ PLATFORMS
 DEPENDENCIES
   github-pages (~> 231)
   jekyll-feed (~> 0.12)
-  jekyll-theme-minimal (~> 0.2.0)
+  minima (~> 2.5)
 
 BUNDLED WITH
    2.5.11

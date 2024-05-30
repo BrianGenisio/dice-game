@@ -14,7 +14,7 @@ source "https://rubygems.org"
 # uncomment the line below. To upgrade, run `bundle update github-pages`.
 gem "github-pages", "~> 231", group: :jekyll_plugins
 
-gem "jekyll-theme-minimal", "~> 0.2.0"
+gem "minima", "~> 2.5"
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
