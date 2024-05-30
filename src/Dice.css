@@ -1,0 +1,28 @@
+.dice {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.face {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 80%;
+  height: 80%;
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: black;
+}
+
+/* Example specific dot positions for each value */
+/* You would need to adjust the grid areas based on the dice value to position dots correctly */
