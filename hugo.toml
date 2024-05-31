@@ -1,0 +1,4 @@
+baseURL = 'https://pass-the-cheese.github.io/passthecheese.ai/'
+languageCode = 'en-us'
+title = 'Pass the Cheese'
+theme = 'ananke'
