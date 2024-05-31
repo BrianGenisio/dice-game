@@ -1,5 +1,5 @@
 ---
-layout: posts
+layout: post
 title:  "The App"
 date:   2024-05-30 12:55:37 -0400
 categories: software ai

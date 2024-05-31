@@ -28,11 +28,10 @@ twitter_username: briangenisio
 github_username:  briangenisio
 
 # Build settings
-theme: minimal-mistakes-jekyll
+theme: minima
 plugins:
   - jekyll-feed
 
-minimal_mistakes_skin: "dark"
 
 # Exclude from processing.
 # The following items will not be processed, by default.
