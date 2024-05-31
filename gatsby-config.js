@@ -1,3 +1,9 @@
 module.exports = {
-  pathPrefix: "/pass-the-cheese/passthecheese.ai.git",
-}
+  plugins: [
+    "gatsby-plugin-styled-components",
+    {
+      resolve: "gatsby-theme-amaranth",
+      options: {},
+    },
+  ],
+};
