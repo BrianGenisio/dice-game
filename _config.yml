@@ -24,13 +24,15 @@ description: This is an experiment. Can I build a production-ready web-based gam
 domain: pass-the-cheese.github.io
 baseurl: /passthecheese.ai/ # the subpath of your site, e.g. /blog
 url: https://pass-the-cheese.github.io # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+twitter_username: briangenisio
+github_username:  briangenisio
 
 # Build settings
-theme: minima
+theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
+
+minimal_mistakes_skin: "dark"
 
 # Exclude from processing.
 # The following items will not be processed, by default.

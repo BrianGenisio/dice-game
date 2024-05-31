@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: posts
 title:  "Hello World!"
 date:   2024-05-29 12:55:37 -0400
 categories: software ai
