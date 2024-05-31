@@ -12,12 +12,17 @@ export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [scores, setScores] = useState(initialScores);
   const [gameOver, setGameOver] = useState(false);
+  const [rolling, setRolling] = useState(false);
 
   const rollDice = () => {
     if (gameOver) return;
-    const newValues = Array.from({ length: 6 }, () => Math.floor(Math.random() * 6) + 1);
-    setDiceValues(newValues);
-    updateScore(newValues.reduce((acc, value) => acc + value, 0));
+    setRolling(true);
+    setTimeout(() => {
+      const newValues = Array.from({ length: 6 }, () => Math.floor(Math.random() * 6) + 1);
+      setDiceValues(newValues);
+      updateScore(newValues.reduce((acc, value) => acc + value, 0));
+      setRolling(false);
+    }, 1000); // Roll for 1 second
   };
 
   const updateScore = (totalNewValue: number) => {
@@ -48,7 +53,7 @@ export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps
           <button onClick={rollDice}>Roll Dice</button>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
             {diceValues.map((value, index) => (
-              <Dice key={index} value={value} />
+              <Dice key={index} value={value} rolling={rolling} />
             ))}
           </div>
           {scores.map((score, index) => (

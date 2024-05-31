@@ -1,6 +1,23 @@
+import React, { useState, useEffect } from 'react';
 import './Dice.css'; // Ensure you have a Dice.css file in the same directory
 
-function Dice({ value }: { value: number }) {
+function Dice({ value, rolling }: { value: number, rolling: boolean }) {
+  const [currentValue, setCurrentValue] = useState(value);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (rolling) {
+      interval = setInterval(() => {
+        setCurrentValue(Math.floor(Math.random() * 6) + 1);
+      }, 250); // Change value every 250ms
+    } else {
+      setCurrentValue(value); // Set to final value when rolling stops
+    }
+
+    return () => clearInterval(interval);
+  }, [rolling, value]);
+
   const renderDiceFace = (value: number) => {
     const positions = [
       [], // 0 dots (not used)
@@ -17,8 +34,8 @@ function Dice({ value }: { value: number }) {
   };
 
   return (
-    <div className="dice">
-      {renderDiceFace(value)}
+    <div className={`dice ${rolling ? 'rolling' : ''}`}>
+      {renderDiceFace(currentValue)}
     </div>
   );
 }
