@@ -1,7 +1,7 @@
 +++
 title = 'Hello World'
 date = 2024-05-31T13:39:57-04:00
-draft = true
+draft = false
 +++
 
 It has been a loooong time since I've blogged.  Like, almost 7 years since I posted anything on [my personal blog](http://briangenisio.com/). The thing is: I really didn't have much to say.  I have been heads-down at [Khan Academy](https://khanacademy.org) doing all sorts of awesome things.  In that time, I became a Staff Engineer, contributed significantly to our massive re-write, and even became a manager!

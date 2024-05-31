@@ -6,7 +6,14 @@
     <description>Recent content in Posts on Pass the Cheese</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Fri, 31 May 2024 13:39:57 -0400</lastBuildDate>
     <atom:link href="https://pass-the-cheese.github.io/passthecheese.ai/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hello World</title>
+      <link>https://pass-the-cheese.github.io/passthecheese.ai/posts/hello-world/</link>
+      <pubDate>Fri, 31 May 2024 13:39:57 -0400</pubDate>
+      <guid>https://pass-the-cheese.github.io/passthecheese.ai/posts/hello-world/</guid>
+      <description>It has been a loooong time since I&amp;rsquo;ve blogged. Like, almost 7 years since I posted anything on my personal blog. The thing is: I really didn&amp;rsquo;t have much to say. I have been heads-down at Khan Academy doing all sorts of awesome things. In that time, I became a Staff Engineer, contributed significantly to our massive re-write, and even became a manager!&#xA;Something that is interesting me these days that I feel like I want to talk about: AI Generated code.</description>
+    </item>
   </channel>
 </rss>
