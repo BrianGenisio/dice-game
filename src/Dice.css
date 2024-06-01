@@ -10,6 +10,17 @@
   cursor: pointer; /* Pointer cursor on hover */
 }
 
+.face {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .dot {
   width: 20px; /* Size of the dots */
   height: 20px;
@@ -24,4 +35,17 @@
 .bottom-left { bottom: 10%; left: 10%; }
 .bottom-right { bottom: 10%; right: 10%; }
 .middle-left { top: 50%; left: 10%; transform: translateY(-50%); }
+.middle-right { top: 50%; right: 10%; transform: translateY(-50%); }
+
+.rolling {
+  animation: roll 1s infinite;
+}
+
+@keyframes roll {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
 .middle-right { top: 50%; right: 10%; transform: translateY(-50%); }

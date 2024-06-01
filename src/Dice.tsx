@@ -1,6 +1,6 @@
 import './Dice.css'; // Ensure you have a Dice.css file in the same directory
 
-function Dice({ value }: { value: number }) {
+function Dice({ value, rolling }: { value: number, rolling: boolean }) {
   const renderDiceFace = (value: number) => {
     const positions = [
       [], // 0 dots (not used)
@@ -17,7 +17,7 @@ function Dice({ value }: { value: number }) {
   };
 
   return (
-    <div className="dice">
+    <div className={`dice ${rolling ? 'rolling' : ''}`}>
       {renderDiceFace(value)}
     </div>
   );
