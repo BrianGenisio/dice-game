@@ -4,4 +4,6 @@ export interface GameState {
   scores: number[];
   gameOver: boolean;
   rolling: boolean;
+  scoreGoal: number; // Added scoreGoal property
+  numberOfPlayers: number; // New property added
 }

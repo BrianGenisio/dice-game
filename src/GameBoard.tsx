@@ -1,44 +1,34 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import Dice from './Dice';
 import { GameState } from './models/GameState';
+import { useParams } from 'react-router-dom';
 
-interface GameBoardProps {
-  numberOfPlayers: number;
-  scoreGoal: number;
-}
+export default function GameBoard() {
+  const { gameId } = useParams();
 
-export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps) {
-  const gameDocRef = useMemo(() => doc(db, 'games', 'game2').withConverter<GameState>({
-    toFirestore: (gameState: GameState) => gameState,
-    fromFirestore: (snapshot) => snapshot.data() as GameState
-  }), []); // Removed 'db' from the dependency array
+  const gameDocRef = useMemo(() => {
+    if (!gameId) return null;
+    return doc(db, 'games', gameId).withConverter<GameState>({
+      toFirestore: (gameState: GameState) => gameState,
+      fromFirestore: (snapshot) => snapshot.data() as GameState
+    });
+  }, [gameId]);
+
   const [gameState, loading, error] = useDocumentData<GameState>(gameDocRef);
 
-  useEffect(() => {
-    if (!loading && !gameState) {
-      const initialScores = Array.from({ length: numberOfPlayers }, () => 0);
-      const initialState: GameState = {
-        diceValues: Array.from({ length: 6 }, () => 1),
-        currentPlayer: 1,
-        scores: initialScores,
-        gameOver: false,
-        rolling: false,
-      };
-      setDoc(gameDocRef, initialState).catch((err) => {
-        console.error('Error setting initial state:', err);
-      });
-    }
-  }, [loading, gameState, numberOfPlayers, gameDocRef]);
+  if (!gameId) {
+    return <div>Error: Game ID is missing</div>;
+  }
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!gameState) return null;
 
   const rollDice = async () => {
-    if (gameState.gameOver || gameState.rolling) return;
+    if (gameState.gameOver || gameState.rolling || !gameDocRef) return;
     await setDoc(gameDocRef, { ...gameState, rolling: true });
 
     setTimeout(() => {
@@ -46,8 +36,8 @@ export default function GameBoard({ numberOfPlayers, scoreGoal }: GameBoardProps
       const totalNewValue = newValues.reduce((acc, value) => acc + value, 0);
       const newScores = [...gameState.scores];
       newScores[gameState.currentPlayer - 1] += totalNewValue;
-      const newGameOver = newScores[gameState.currentPlayer - 1] >= scoreGoal;
-      const newCurrentPlayer = gameState.currentPlayer === numberOfPlayers ? 1 : gameState.currentPlayer + 1;
+      const newGameOver = newScores[gameState.currentPlayer - 1] >= gameState.scoreGoal;
+      const newCurrentPlayer = gameState.currentPlayer === gameState.numberOfPlayers ? 1 : gameState.currentPlayer + 1;
 
       setDoc(gameDocRef, {
         ...gameState,
