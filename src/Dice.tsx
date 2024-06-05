@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import './Dice.css'; // Ensure you have a Dice.css file in the same directory
+import './Dice.css';
 
-function Dice({ value, rolling }: { value: number, rolling: boolean }) {
+interface DiceProps {
+  value: number;
+  rolling: boolean;
+}
+
+const Dice: React.FC<DiceProps> = ({ value, rolling }) => {
   const [displayValue, setDisplayValue] = useState(value);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     if (rolling) {
       interval = setInterval(() => {
         setDisplayValue(Math.floor(Math.random() * 6) + 1);
@@ -14,7 +19,9 @@ function Dice({ value, rolling }: { value: number, rolling: boolean }) {
       setDisplayValue(value);
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [rolling, value]);
 
   const renderDiceFace = (value: number) => {
@@ -28,8 +35,13 @@ function Dice({ value, rolling }: { value: number, rolling: boolean }) {
       ['top-left', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-right'], // 6 dots
     ];
 
-    const dots = positions[value].map((pos, i) => <span key={i} className={`dot ${pos}`}></span>);
-    return <div className="face">{dots}</div>;
+    return (
+      <div className="face">
+        {positions[value].map((pos, i) => (
+          <span key={i} className={`dot ${pos}`}></span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -37,6 +49,6 @@ function Dice({ value, rolling }: { value: number, rolling: boolean }) {
       {renderDiceFace(displayValue)}
     </div>
   );
-}
+};
 
 export default Dice;
