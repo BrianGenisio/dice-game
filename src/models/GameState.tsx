@@ -1,5 +1,5 @@
 import { DocumentReference, doc, setDoc, FirestoreDataConverter } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { getDb } from '../firebaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 
 // Constants
@@ -22,7 +22,7 @@ export interface GameState {
 // Create a new game
 export const createGame = async (numberOfPlayers: number, scoreGoal: number): Promise<string> => {
   const gameId = uuidv4().split('-')[0]; // Shorten the UUID
-  const gameDocRef = doc(db, GAMES_COLLECTION, gameId);
+  const gameDocRef = doc(getDb(), GAMES_COLLECTION, gameId);
   const initialScores = Array(numberOfPlayers).fill(0);
   const initialState: GameState = {
     diceValues: Array(DICE_SIDES).fill(INITIAL_DICE_VALUE),
@@ -46,7 +46,7 @@ export const gameStateConverter: FirestoreDataConverter<GameState> = {
 // Get game document reference
 export const getGameDocRef = (gameId: string | undefined): DocumentReference<GameState> | null => {
   if (!gameId) return null;
-  return doc(db, GAMES_COLLECTION, gameId).withConverter(gameStateConverter);
+  return doc(getDb(), GAMES_COLLECTION, gameId).withConverter(gameStateConverter);
 };
 
 // Roll dice values

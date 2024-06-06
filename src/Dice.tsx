@@ -38,14 +38,14 @@ const Dice: React.FC<DiceProps> = ({ value, rolling }) => {
     return (
       <div className="face">
         {positions[value].map((pos, i) => (
-          <span key={i} className={`dot ${pos}`}></span>
+          <span key={i} data-testid={`dot-${pos}`} className={`dot ${pos}`}></span>
         ))}
       </div>
     );
   };
 
   return (
-    <div className={`dice ${rolling ? 'rolling' : ''}`}>
+    <div data-testid="dice" className={`dice ${rolling ? 'rolling' : ''}`}>
       {renderDiceFace(displayValue)}
     </div>
   );

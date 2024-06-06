@@ -2,9 +2,9 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders create game button', () => {
   render(<App />);
-  const linkElement = screen.getByText(/Roll Dice/i);
-  expect(linkElement).toBeInTheDocument();
-});
+  const buttonElement = screen.getByText(/Create Game/i);
 
+  expect(buttonElement).toBeInTheDocument();
+});
