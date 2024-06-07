@@ -33,7 +33,13 @@ describe('WaitingRoom Component', () => {
   });
 
   test('disables input and Add Player button when max players is reached', () => {
-    render(<WaitingRoom players={['Player1', 'Player2', 'Player3']} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    const players = [
+      { name: 'Player1', uid: '1', score: 0 },
+      { name: 'Player2', uid: '2', score: 0 },
+      { name: 'Player3', uid: '3', score: 0 }
+    ];
+
+    render(<WaitingRoom players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     expect(screen.getByPlaceholderText('Enter your name')).toBeDisabled();
     expect(screen.getByText('Add Player')).toBeDisabled();
@@ -48,11 +54,11 @@ describe('WaitingRoom Component', () => {
   });
 
   test('renders the list of players', () => {
-    const players = ['Player1', 'Player2'];
+    const players = [{ name: 'Player1', uid: '1', score: 0 }, { name: 'Player2', uid: '2', score: 0 }];
     render(<WaitingRoom players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     players.forEach(player => {
-      expect(screen.getByText(player)).toBeInTheDocument();
+      expect(screen.getByText(player.name)).toBeInTheDocument();
     });
   });
 });

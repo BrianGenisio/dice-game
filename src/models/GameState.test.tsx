@@ -1,5 +1,5 @@
 import { createGame, getGameDocRef, rollDice, addPlayer } from './GameState';
-import { setDoc, doc, getFirestore, getDoc, arrayUnion, updateDoc } from 'firebase/firestore'; // Add updateDoc import
+import { setDoc, doc, getFirestore, getDoc } from 'firebase/firestore'; // Add updateDoc import
 import { v4 as uuidv4 } from 'uuid';
 import { GameState } from './GameState'; // Import the existing GameState type
 
@@ -50,7 +50,6 @@ describe('createGame', () => {
     expect(setDoc).toHaveBeenCalledWith(mockDocRef, {
       diceValues: Array(6).fill(1),
       currentPlayer: 1,
-      scores: Array(maxPlayers).fill(0),
       rolling: false,
       scoreGoal,
       maxPlayers,
@@ -69,6 +68,14 @@ describe('rollDice', () => {
     jest.useFakeTimers(); // Use fake timers
     (doc as jest.Mock).mockReturnValue(mockDocRef);
     (getFirestore as jest.Mock).mockReturnValue(mockFirestore);
+
+    // Mock localStorage.getItem
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+      if (key === 'userId') {
+        return '1';
+      }
+      return null;
+    });
   });
 
   afterEach(() => {
@@ -79,14 +86,16 @@ describe('rollDice', () => {
   it('should update game state correctly after rolling dice', async () => {
     const gameId = 'testGameId';
     const gameDocRef = getGameDocRef(gameId);
+    const players = [
+      { uid: '1', name: 'Player 1', score: 0 },
+    ];
     const initialGameState: GameState = {
       diceValues: [1, 1, 1, 1, 1, 1],
       currentPlayer: 1,
-      scores: [0, 0],
       rolling: false,
       scoreGoal: 100,
       maxPlayers: 2,
-      players: [],
+      players,
       state: 'inProgress',
     };
 
@@ -109,9 +118,8 @@ describe('rollDice', () => {
         rolling: false,
         currentPlayer: expect.any(Number),
         diceValues: expect.any(Array),
-        scores: expect.any(Array),
         maxPlayers: 2,
-        players: [],
+        players,
         state: 'inProgress',
       })
     );
@@ -130,7 +138,7 @@ describe('addPlayer', () => {
       if (docRef.id === mockGameId) {
         return Promise.resolve({
           data: () => ({
-            players: ['Player1'],
+            players: ['Player2'],
             scores: [0],
           }),
         });
@@ -150,15 +158,21 @@ describe('addPlayer', () => {
   });
 
   it('should add a player to the game', async () => {
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+      if (key === 'userId') {
+        return '2';
+      }
+      return null;
+    });
+
     const gameDocRef = getGameDocRef(mockGameId);
     if (!gameDocRef) throw new Error('Game document reference is null');
 
-    await addPlayer(gameDocRef, 'Player1');
+    await addPlayer(gameDocRef, 'Player2');
 
     const gameSnapshot = await getDoc(gameDocRef);
     const gameState = gameSnapshot.data();
 
-    expect(gameState?.players).toContain('Player1');
-    expect(gameState?.scores).toContain(0);
+    expect(gameState?.players).toContain('Player2');
   });
 });

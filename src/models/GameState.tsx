@@ -8,17 +8,40 @@ const DICE_SIDES = 6;
 const INITIAL_DICE_VALUE = 1;
 const ROLL_DELAY_MS = 1000;
 
+// Player Interface
+export interface Player {
+  uid: string;
+  name: string;
+  score: number;
+}
+
 // GameState Interface
 export interface GameState {
   diceValues: number[];
   currentPlayer: number;
-  scores: number[];
   rolling: boolean;
   scoreGoal: number;
   maxPlayers: number; // Maximum number of players
-  players: string[]; // Actual players
+  players: Player[]; // Actual players
   state: 'waiting' | 'inProgress' | 'gameOver';
 }
+
+export const getUserId = (): string => {
+  const localStorageKey = 'userId';
+  let userId = localStorage.getItem(localStorageKey);
+
+  if (!userId) {
+    userId = uuidv4();
+    localStorage.setItem(localStorageKey, userId);
+  }
+
+  return userId;
+};
+
+export const isCurrentUserInGame = (players: Player[]): boolean => {
+  const currentUserId = getUserId();
+  return players.some(player => player.uid === currentUserId);
+};
 
 // Add functions to manage players and start the game
 export const addPlayer = async (gameDocRef: any, playerName: string) => {
@@ -29,9 +52,14 @@ export const addPlayer = async (gameDocRef: any, playerName: string) => {
     throw new Error('Maximum number of players reached');
   }
 
+  const userId = getUserId();
+  if (isCurrentUserInGame(gameState.players)) {
+    throw new Error('User is already in the game');
+  }
+
+  const newPlayer: Player = { uid: userId, name: playerName, score: 0 };
   await updateDoc(gameDocRef, {
-    players: arrayUnion(playerName),
-    scores: arrayUnion(0),
+    players: arrayUnion(newPlayer),
   });
 };
 
@@ -45,15 +73,14 @@ export const startGame = async (gameDocRef: any) => {
 export const createGame = async (maxPlayers: number, scoreGoal: number): Promise<string> => {
   const gameId = uuidv4().split('-')[0]; // Shorten the UUID
   const gameDocRef = doc(getDb(), GAMES_COLLECTION, gameId);
-  const initialScores = Array(maxPlayers).fill(0);
+  const initialPlayers: Player[] = [];
   const initialState: GameState = {
     diceValues: Array(DICE_SIDES).fill(INITIAL_DICE_VALUE),
     currentPlayer: 1,
-    scores: initialScores,
     rolling: false,
     scoreGoal,
     maxPlayers,
-    players: [], // Start with an empty array of players
+    players: initialPlayers,
     state: 'waiting',
   };
   await setDoc(gameDocRef, initialState);
@@ -76,34 +103,41 @@ export const getGameDocRef = (gameId: string | undefined): DocumentReference<Gam
 const rollDiceValues = (): number[] => Array.from({ length: DICE_SIDES }, () => Math.floor(Math.random() * DICE_SIDES) + 1);
 
 // Calculate new scores
-const calculateNewScores = (gameState: GameState, newValues: number[]): number[] => {
-  const newScores = [...gameState.scores];
+const calculateNewScores = (gameState: GameState, newValues: number[]): Player[] => {
+  const newPlayers = [...gameState.players];
   const totalNewValue = newValues.reduce((acc, value) => acc + value, 0);
-  newScores[gameState.currentPlayer - 1] += totalNewValue;
-  return newScores;
+  newPlayers[gameState.currentPlayer - 1].score += totalNewValue;
+  return newPlayers;
 };
 
 // Determine next player
 const determineNextPlayer = (gameState: GameState, newGameOver: boolean): number => {
-  return newGameOver ? gameState.currentPlayer : (gameState.currentPlayer % gameState.maxPlayers) + 1;
+  return newGameOver ? gameState.currentPlayer : (gameState.currentPlayer % gameState.players.length) + 1;
 };
 
 // Roll dice
 export const rollDice = async (gameState: GameState, gameDocRef: DocumentReference<GameState>): Promise<void> => {
+  const currentUserId = getUserId();
+  const currentPlayerId = gameState.players[gameState.currentPlayer - 1].uid;
+
+  if (currentUserId !== currentPlayerId) {
+    throw new Error('It is not your turn to roll the dice');
+  }
+
   if (gameState.state === 'gameOver' || gameState.rolling) return;
 
   await setDoc(gameDocRef, { ...gameState, rolling: true });
 
   setTimeout(async () => {
     const newValues = rollDiceValues();
-    const newScores = calculateNewScores(gameState, newValues);
-    const newGameOver = newScores[gameState.currentPlayer - 1] >= gameState.scoreGoal;
+    const newPlayers = calculateNewScores(gameState, newValues);
+    const newGameOver = newPlayers[gameState.currentPlayer - 1].score >= gameState.scoreGoal;
     const newCurrentPlayer = determineNextPlayer(gameState, newGameOver);
 
     await setDoc(gameDocRef, {
       ...gameState,
       diceValues: newValues,
-      scores: newScores,
+      players: newPlayers,
       rolling: false,
       currentPlayer: newCurrentPlayer,
       state: newGameOver ? 'gameOver' : 'inProgress',

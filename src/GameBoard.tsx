@@ -49,12 +49,11 @@ export default function GameBoard() {
           currentPlayer={gameState.currentPlayer}
           rolling={gameState.rolling}
           diceValues={gameState.diceValues}
-          scores={gameState.scores}
-          players={gameState.players}  // Added this line
+          players={gameState.players}
           onRollDice={handleRollDice}
         />
       ) : (
-        <GameOver currentPlayer={gameState.currentPlayer} />
+        <GameOver players={gameState.players} />
       )}
     </div>
   );

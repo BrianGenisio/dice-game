@@ -1,16 +1,27 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import GameInProgress from './GameInProgress';
+import { getUserId } from './models/GameState'; // Import the function to be mocked
+
+jest.mock('./models/GameState', () => ({
+  getUserId: jest.fn(),
+}));
 
 describe('GameInProgress', () => {
   const defaultProps = {
     currentPlayer: 1,
     rolling: false,
     diceValues: [1, 2, 3],
-    scores: [10, 20],
-    players: ['Player 1', 'Player 2'],
+    players: [
+      { uid: '1', name: 'Player 1', score: 10 },
+      { uid: '2', name: 'Player 2', score: 20 },
+    ],
     onRollDice: jest.fn(),
   };
+
+  beforeEach(() => {
+    (getUserId as jest.Mock).mockReturnValue('1'); // Mock the return value of getUserId
+  });
 
   it('renders the current player\'s turn', () => {
     render(<GameInProgress {...defaultProps} />);
@@ -18,7 +29,7 @@ describe('GameInProgress', () => {
   });
 
   it('renders the roll dice button and handles click', () => {
-    render(<GameInProgress {...defaultProps} />);
+    render(<GameInProgress {...defaultProps} rolling={false} />);
     const button = screen.getByText('Roll Dice');
     expect(button).toBeInTheDocument();
     expect(button).not.toBeDisabled();
@@ -41,8 +52,10 @@ describe('GameInProgress', () => {
 
   it('renders the player scores', () => {
     render(<GameInProgress {...defaultProps} />);
-    defaultProps.scores.forEach((score, index) => {
-      expect(screen.getByText(`Player ${index + 1} Score: ${score}`)).toBeInTheDocument();
+    const scoreElements = screen.getAllByText(/Score:/);
+    expect(scoreElements).toHaveLength(defaultProps.players.length);
+    scoreElements.forEach((element, index) => {
+      expect(element).toHaveTextContent(`Player ${index + 1} Score: ${defaultProps.players[index].score}`);
     });
   });
 });
