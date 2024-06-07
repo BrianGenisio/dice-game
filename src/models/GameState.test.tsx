@@ -33,6 +33,14 @@ describe('createGame', () => {
     (uuidv4 as jest.Mock).mockReturnValue(`${mockGameId}-uuid`);
     (doc as jest.Mock).mockReturnValue(mockDocRef);
     (getFirestore as jest.Mock).mockReturnValue(mockFirestore);
+
+    // Mock localStorage.getItem
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+      if (key === 'userId') {
+        return '1';
+      }
+      return null;
+    });
   });
 
   afterEach(() => {
@@ -55,6 +63,7 @@ describe('createGame', () => {
       maxPlayers,
       players: [],
       state: 'waiting',
+      createdBy: '1',
     });
   });
 });
@@ -97,6 +106,7 @@ describe('rollDice', () => {
       maxPlayers: 2,
       players,
       state: 'inProgress',
+      createdBy: '1',
     };
 
     // Mock setDoc to resolve immediately

@@ -2,6 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import WaitingRoom from './WaitingRoom';
+import { getUserId } from './models/GameState';
+
+jest.mock('./models/GameState', () => ({
+  getGameDocRef: jest.fn(),
+  rollDice: jest.fn(),
+  getUserId: jest.fn(),  // Add this line
+  isCurrentUserInGame: jest.fn(),
+}));
 
 describe('WaitingRoom Component', () => {
   const mockOnAddPlayer = jest.fn();
@@ -11,10 +19,11 @@ describe('WaitingRoom Component', () => {
   beforeEach(() => {
     mockOnAddPlayer.mockClear();
     mockOnStartGame.mockClear();
+    (getUserId as jest.Mock).mockReturnValue('1'); // Mock the return value of getUserId
   });
 
   test('renders the component with initial props', () => {
-    render(<WaitingRoom players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    render(<WaitingRoom createdBy='1' players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     expect(screen.getByText('Waiting Room')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Enter your name')).toBeInTheDocument();
@@ -23,7 +32,7 @@ describe('WaitingRoom Component', () => {
   });
 
   test('adds a player when Add Player button is clicked', () => {
-    render(<WaitingRoom players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    render(<WaitingRoom createdBy='1' players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'Player1' } });
     fireEvent.click(screen.getByText('Add Player'));
@@ -39,14 +48,14 @@ describe('WaitingRoom Component', () => {
       { name: 'Player3', uid: '3', score: 0 }
     ];
 
-    render(<WaitingRoom players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    render(<WaitingRoom createdBy='1' players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
-    expect(screen.getByPlaceholderText('Enter your name')).toBeDisabled();
-    expect(screen.getByText('Add Player')).toBeDisabled();
+    expect(screen.queryByPlaceholderText('Enter your name')).not.toBeInTheDocument();
+    expect(screen.queryByText('Add Player')).not.toBeInTheDocument();
   });
 
   test('calls onStartGame when Start Game button is clicked', () => {
-    render(<WaitingRoom players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    render(<WaitingRoom createdBy='1' players={[]} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     fireEvent.click(screen.getByText('Start Game'));
 
@@ -55,7 +64,7 @@ describe('WaitingRoom Component', () => {
 
   test('renders the list of players', () => {
     const players = [{ name: 'Player1', uid: '1', score: 0 }, { name: 'Player2', uid: '2', score: 0 }];
-    render(<WaitingRoom players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
+    render(<WaitingRoom createdBy='1' players={players} onAddPlayer={mockOnAddPlayer} onStartGame={mockOnStartGame} maxPlayers={maxPlayers} />);
 
     players.forEach(player => {
       expect(screen.getByText(player.name)).toBeInTheDocument();

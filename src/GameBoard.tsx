@@ -43,6 +43,7 @@ export default function GameBoard() {
           players={gameState.players}
           onAddPlayer={handleAddPlayer}
           onStartGame={handleStartGame}
+          createdBy={gameState.createdBy}
         />
       ) : gameState.state === 'inProgress' ? (
         <GameInProgress

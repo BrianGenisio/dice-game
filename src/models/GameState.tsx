@@ -24,6 +24,7 @@ export interface GameState {
   maxPlayers: number; // Maximum number of players
   players: Player[]; // Actual players
   state: 'waiting' | 'inProgress' | 'gameOver';
+  createdBy: string; // Add this line
 }
 
 export const getUserId = (): string => {
@@ -64,6 +65,14 @@ export const addPlayer = async (gameDocRef: any, playerName: string) => {
 };
 
 export const startGame = async (gameDocRef: any) => {
+  const gameSnapshot = await getDoc(gameDocRef);
+  const gameState = gameSnapshot.data() as GameState;
+  const currentUserId = getUserId();
+
+  if (gameState.createdBy !== currentUserId) {
+    throw new Error('Only the game creator can start the game');
+  }
+
   await updateDoc(gameDocRef, {
     state: 'inProgress'
   });
@@ -82,6 +91,7 @@ export const createGame = async (maxPlayers: number, scoreGoal: number): Promise
     maxPlayers,
     players: initialPlayers,
     state: 'waiting',
+    createdBy: getUserId(), // Add this line
   };
   await setDoc(gameDocRef, initialState);
   return gameId;
