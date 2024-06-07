@@ -1,4 +1,4 @@
-import { DocumentReference, doc, setDoc, FirestoreDataConverter } from 'firebase/firestore';
+import { DocumentReference, doc, setDoc, updateDoc, FirestoreDataConverter, arrayUnion, getDoc } from 'firebase/firestore';
 import { getDb } from '../firebaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,25 +13,48 @@ export interface GameState {
   diceValues: number[];
   currentPlayer: number;
   scores: number[];
-  gameOver: boolean;
   rolling: boolean;
   scoreGoal: number;
-  numberOfPlayers: number;
+  maxPlayers: number; // Maximum number of players
+  players: string[]; // Actual players
+  state: 'waiting' | 'inProgress' | 'gameOver';
 }
 
+// Add functions to manage players and start the game
+export const addPlayer = async (gameDocRef: any, playerName: string) => {
+  const gameSnapshot = await getDoc(gameDocRef);
+  const gameState = gameSnapshot.data() as GameState;
+
+  if (gameState.players.length >= gameState.maxPlayers) {
+    throw new Error('Maximum number of players reached');
+  }
+
+  await updateDoc(gameDocRef, {
+    players: arrayUnion(playerName),
+    scores: arrayUnion(0),
+  });
+};
+
+export const startGame = async (gameDocRef: any) => {
+  await updateDoc(gameDocRef, {
+    state: 'inProgress'
+  });
+};
+
 // Create a new game
-export const createGame = async (numberOfPlayers: number, scoreGoal: number): Promise<string> => {
+export const createGame = async (maxPlayers: number, scoreGoal: number): Promise<string> => {
   const gameId = uuidv4().split('-')[0]; // Shorten the UUID
   const gameDocRef = doc(getDb(), GAMES_COLLECTION, gameId);
-  const initialScores = Array(numberOfPlayers).fill(0);
+  const initialScores = Array(maxPlayers).fill(0);
   const initialState: GameState = {
     diceValues: Array(DICE_SIDES).fill(INITIAL_DICE_VALUE),
     currentPlayer: 1,
     scores: initialScores,
-    gameOver: false,
     rolling: false,
     scoreGoal,
-    numberOfPlayers,
+    maxPlayers,
+    players: [], // Start with an empty array of players
+    state: 'waiting',
   };
   await setDoc(gameDocRef, initialState);
   return gameId;
@@ -62,12 +85,12 @@ const calculateNewScores = (gameState: GameState, newValues: number[]): number[]
 
 // Determine next player
 const determineNextPlayer = (gameState: GameState, newGameOver: boolean): number => {
-  return newGameOver ? gameState.currentPlayer : (gameState.currentPlayer % gameState.numberOfPlayers) + 1;
+  return newGameOver ? gameState.currentPlayer : (gameState.currentPlayer % gameState.maxPlayers) + 1;
 };
 
 // Roll dice
 export const rollDice = async (gameState: GameState, gameDocRef: DocumentReference<GameState>): Promise<void> => {
-  if (gameState.gameOver || gameState.rolling) return;
+  if (gameState.state === 'gameOver' || gameState.rolling) return;
 
   await setDoc(gameDocRef, { ...gameState, rolling: true });
 
@@ -81,9 +104,9 @@ export const rollDice = async (gameState: GameState, gameDocRef: DocumentReferen
       ...gameState,
       diceValues: newValues,
       scores: newScores,
-      gameOver: newGameOver,
       rolling: false,
       currentPlayer: newCurrentPlayer,
+      state: newGameOver ? 'gameOver' : 'inProgress',
     });
   }, ROLL_DELAY_MS);
 };

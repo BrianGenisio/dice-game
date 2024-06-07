@@ -29,7 +29,7 @@ describe('Home Component', () => {
     );
 
     expect(screen.getByText('Create a New Game')).toBeInTheDocument();
-    expect(screen.getByLabelText('Number of Players:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum Number of Players:')).toBeInTheDocument();
     expect(screen.getByLabelText('Score Goal:')).toBeInTheDocument();
     expect(screen.getByText('Create Game')).toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe('Home Component', () => {
       </MemoryRouter>
     );
 
-    const numberOfPlayersInput = screen.getByLabelText('Number of Players:');
+    const numberOfPlayersInput = screen.getByLabelText('Maximum Number of Players:');
     const scoreGoalInput = screen.getByLabelText('Score Goal:');
 
     fireEvent.change(numberOfPlayersInput, { target: { value: '4' } });

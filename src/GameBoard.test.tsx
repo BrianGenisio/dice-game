@@ -16,6 +16,17 @@ const mockUseDocumentData = useDocumentData as jest.Mock;
 const mockGetGameDocRef = getGameDocRef as jest.Mock;
 const mockRollDice = rollDice as jest.Mock;
 
+const inProgressGameState = {
+  currentPlayer: 1,
+  rolling: false,
+  diceValues: [1, 2],
+  scores: [10, 5],
+  state: 'inProgress',
+  maxPlayers: 2,
+  scoreGoal: 100,
+  players: [],
+};
+
 describe('GameBoard', () => {
   const gameId = 'test-game-id';
 
@@ -63,14 +74,7 @@ describe('GameBoard', () => {
   });
 
   test('renders GameInProgress component when game is in progress', () => {
-    const gameState = {
-      gameOver: false,
-      currentPlayer: 1,
-      rolling: false,
-      diceValues: [1, 2],
-      scores: [10, 5], // Ensure this is an array
-    };
-    mockUseDocumentData.mockReturnValue([gameState, false, undefined]);
+    mockUseDocumentData.mockReturnValue([inProgressGameState, false, undefined]);
 
     renderWithRouter(<GameBoard />);
 
@@ -82,20 +86,13 @@ describe('GameBoard', () => {
   });
 
   test('calls rollDice when Roll Dice button is clicked', async () => {
-    const gameState = {
-      gameOver: false,
-      currentPlayer: 'Player 1',
-      rolling: false,
-      diceValues: [1, 2],
-      scores: [10, 5], // Updated to be an array
-    };
-    mockUseDocumentData.mockReturnValue([gameState, false, undefined]);
+    mockUseDocumentData.mockReturnValue([inProgressGameState, false, undefined]);
 
     renderWithRouter(<GameBoard />);
 
     const rollButton = screen.getByText('Roll Dice');
     fireEvent.click(rollButton);
 
-    expect(mockRollDice).toHaveBeenCalledWith(gameState, { id: gameId });
+    expect(mockRollDice).toHaveBeenCalledWith(inProgressGameState, { id: gameId });
   });
 });

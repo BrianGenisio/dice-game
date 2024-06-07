@@ -6,6 +6,7 @@ type GameInProgressProps = {
   rolling: boolean;
   diceValues: number[];
   scores: number[];
+  players: string[];
   onRollDice: () => void;
 };
 
@@ -14,6 +15,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   rolling,
   diceValues,
   scores,
+  players,
   onRollDice,
 }) => {
   return (
@@ -26,7 +28,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
         ))}
       </div>
       {scores.map((score, index) => (
-        <h2 key={index}>Player {index + 1} Score: {score}</h2>
+        <h2 key={index}>{players[index]} Score: {score}</h2>
       ))}
     </>
   );

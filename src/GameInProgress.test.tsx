@@ -8,6 +8,7 @@ describe('GameInProgress', () => {
     rolling: false,
     diceValues: [1, 2, 3],
     scores: [10, 20],
+    players: ['Player 1', 'Player 2'],
     onRollDice: jest.fn(),
   };
 

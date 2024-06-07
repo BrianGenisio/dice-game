@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useParams } from 'react-router-dom';
-import { getGameDocRef, rollDice, GameState } from './models/GameState';
+import { getGameDocRef, rollDice, GameState, addPlayer, startGame } from './models/GameState';
 import GameOver from './GameOver';
 import GameInProgress from './GameInProgress';
+import WaitingRoom from './WaitingRoom';
 
 export default function GameBoard() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -22,18 +23,38 @@ export default function GameBoard() {
     }
   };
 
+  const handleAddPlayer = async (playerName: string) => {
+    if (gameDocRef) {
+      await addPlayer(gameDocRef, playerName);
+    }
+  };
+
+  const handleStartGame = async () => {
+    if (gameDocRef) {
+      await startGame(gameDocRef);
+    }
+  };
+
   return (
     <div>
-      {gameState.gameOver ? (
-        <GameOver currentPlayer={gameState.currentPlayer} />
-      ) : (
+      {gameState.state === 'waiting' ? (
+        <WaitingRoom
+          maxPlayers={gameState.maxPlayers}
+          players={gameState.players}
+          onAddPlayer={handleAddPlayer}
+          onStartGame={handleStartGame}
+        />
+      ) : gameState.state === 'inProgress' ? (
         <GameInProgress
           currentPlayer={gameState.currentPlayer}
           rolling={gameState.rolling}
           diceValues={gameState.diceValues}
           scores={gameState.scores}
+          players={gameState.players}  // Added this line
           onRollDice={handleRollDice}
         />
+      ) : (
+        <GameOver currentPlayer={gameState.currentPlayer} />
       )}
     </div>
   );

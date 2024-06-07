@@ -1,17 +1,27 @@
-import { createGame, getGameDocRef, rollDice } from './GameState';
-import { setDoc, doc, getFirestore } from 'firebase/firestore';
+import { createGame, getGameDocRef, rollDice, addPlayer } from './GameState';
+import { setDoc, doc, getFirestore, getDoc, arrayUnion, updateDoc } from 'firebase/firestore'; // Add updateDoc import
 import { v4 as uuidv4 } from 'uuid';
+import { GameState } from './GameState'; // Import the existing GameState type
 
 // Mock Firebase functions
 jest.mock('firebase/firestore', () => ({
   setDoc: jest.fn(),
   doc: jest.fn(),
   getFirestore: jest.fn(),
+  getDoc: jest.fn(),
+  arrayUnion: jest.fn(), // Mock arrayUnion
+  updateDoc: jest.fn(), // Mock updateDoc
 }));
 
 // Mock UUID function
 jest.mock('uuid', () => ({
   v4: jest.fn(),
+}));
+
+// Mock getGameDocRef
+jest.mock('./GameState', () => ({
+  ...jest.requireActual('./GameState'),
+  getGameDocRef: jest.fn(),
 }));
 
 describe('createGame', () => {
@@ -30,21 +40,22 @@ describe('createGame', () => {
   });
 
   it('should create a new game with the correct initial state', async () => {
-    const numberOfPlayers = 4;
+    const maxPlayers = 4;
     const scoreGoal = 100;
 
-    const gameId = await createGame(numberOfPlayers, scoreGoal);
+    const gameId = await createGame(maxPlayers, scoreGoal);
 
     expect(gameId).toBe(mockGameId);
     expect(doc).toHaveBeenCalledWith(mockFirestore, 'games', mockGameId);
     expect(setDoc).toHaveBeenCalledWith(mockDocRef, {
       diceValues: Array(6).fill(1),
       currentPlayer: 1,
-      scores: Array(numberOfPlayers).fill(0),
-      gameOver: false,
+      scores: Array(maxPlayers).fill(0),
       rolling: false,
       scoreGoal,
-      numberOfPlayers,
+      maxPlayers,
+      players: [],
+      state: 'waiting',
     });
   });
 });
@@ -68,14 +79,15 @@ describe('rollDice', () => {
   it('should update game state correctly after rolling dice', async () => {
     const gameId = 'testGameId';
     const gameDocRef = getGameDocRef(gameId);
-    const initialGameState = {
+    const initialGameState: GameState = {
       diceValues: [1, 1, 1, 1, 1, 1],
       currentPlayer: 1,
       scores: [0, 0],
-      gameOver: false,
       rolling: false,
-      scoreGoal: 10,
-      numberOfPlayers: 2,
+      scoreGoal: 100,
+      maxPlayers: 2,
+      players: [],
+      state: 'inProgress',
     };
 
     // Mock setDoc to resolve immediately
@@ -98,8 +110,55 @@ describe('rollDice', () => {
         currentPlayer: expect.any(Number),
         diceValues: expect.any(Array),
         scores: expect.any(Array),
-        gameOver: expect.any(Boolean),
+        maxPlayers: 2,
+        players: [],
+        state: 'inProgress',
       })
     );
+  });
+});
+
+describe('addPlayer', () => {
+  const mockGameId = 'testGameId';
+  const mockDocRef = { id: mockGameId, withConverter: jest.fn().mockReturnThis() };
+  const mockFirestore = {}; // Mock Firestore instance
+
+  beforeEach(() => {
+    (doc as jest.Mock).mockReturnValue(mockDocRef);
+    (getFirestore as jest.Mock).mockReturnValue(mockFirestore);
+    (getDoc as jest.Mock).mockImplementation((docRef) => {
+      if (docRef.id === mockGameId) {
+        return Promise.resolve({
+          data: () => ({
+            players: ['Player1'],
+            scores: [0],
+          }),
+        });
+      }
+      return Promise.resolve({
+        data: () => ({
+          players: [],
+          scores: [],
+        }),
+      });
+    });
+    (getGameDocRef as jest.Mock).mockReturnValue(mockDocRef); // Add this line
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should add a player to the game', async () => {
+    const gameDocRef = getGameDocRef(mockGameId);
+    if (!gameDocRef) throw new Error('Game document reference is null');
+
+    await addPlayer(gameDocRef, 'Player1');
+
+    const gameSnapshot = await getDoc(gameDocRef);
+    const gameState = gameSnapshot.data();
+
+    expect(gameState?.players).toContain('Player1');
+    expect(gameState?.scores).toContain(0);
   });
 });
