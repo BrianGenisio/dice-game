@@ -1,10 +1,12 @@
-import { Player, getUserId } from './models/GameState';
+import { GameState } from './models/GameState';
+import { getUserId } from './models/Player';
 
-type GameOverProps = {
-  players: Player[];
-};
+interface GameOverProps {
+  gameState: GameState;
+}
 
-export default function GameOver({ players }: GameOverProps) {
+const GameOver: React.FC<GameOverProps> = ({ gameState }) => {
+  const { players } = gameState;
   const winner = players.reduce((prev, current) => (prev.score > current.score ? prev : current));
   const userId = getUserId();
   const isUserWinner = winner.uid === userId;
@@ -21,3 +23,5 @@ export default function GameOver({ players }: GameOverProps) {
     </div>
   );
 }
+
+export default GameOver;

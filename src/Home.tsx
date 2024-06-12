@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createGame } from './models/GameState';
+import { saveGameState } from './models/GameState';
+import { getUserId } from './models/Player';
+import { createGame } from './business-logic/gameLogic';
 
 const NumberInput = ({ label, value, onChange }: { label: string, value: number, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
   <label>
@@ -15,7 +17,9 @@ function Home() {
   const navigate = useNavigate();
 
   const handleCreateGame = async () => {
-    const gameId = await createGame(maxNumberOfPlayers, scoreGoal);
+    const userId = getUserId();
+    const { gameId, initialState } = await createGame(maxNumberOfPlayers, scoreGoal, userId);
+    await saveGameState(gameId, initialState);
     navigate(`/games/${gameId}`);
   };
 

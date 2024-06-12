@@ -52,3 +52,4 @@ const Dice: React.FC<DiceProps> = ({ value, rolling }) => {
 };
 
 export default Dice;
+

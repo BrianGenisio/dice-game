@@ -10,7 +10,7 @@ jest.mock('react-firebase-hooks/firestore');
 jest.mock('./models/GameState', () => ({
   getGameDocRef: jest.fn(),
   rollDice: jest.fn(),
-  getUserId: jest.fn(),  // Add this line
+  getUserId: jest.fn(),
 }));
 
 const mockUseDocumentData = useDocumentData as jest.Mock;
@@ -26,7 +26,7 @@ const inProgressGameState = {
   scoreGoal: 100,
   players: [
     { uid: '1', name: 'Player 1', score: 100 },
-    { uid: '2', name: 'Player 2', score: 50 }
+    { uid: '2', name: 'Player 2', score: 50 },
   ],
 };
 
@@ -42,11 +42,13 @@ describe('GameBoard', () => {
   });
 
   const renderWithRouter = (children: React.ReactElement) => {
-    return render(<MemoryRouter initialEntries={[`/games/${gameId}`]}>
+    return render(
+      <MemoryRouter initialEntries={[`/games/${gameId}`]}>
         <Routes>
-            <Route path="/games/:gameId" element={children} />
+          <Route path="/games/:gameId" element={children} />
         </Routes>
-    </MemoryRouter>);
+      </MemoryRouter>
+    );
   };
 
   test('renders loading state', () => {
@@ -68,12 +70,12 @@ describe('GameBoard', () => {
 
   test('renders GameOver component when game is over', () => {
     const gameState = {
-        gameOver: true,
-        players: [
-            { uid: '1', name: 'Player 1', score: 100 },
-            { uid: '2', name: 'Player 2', score: 50 }
-        ],
-     };
+      gameOver: true,
+      players: [
+        { uid: '1', name: 'Player 1', score: 100 },
+        { uid: '2', name: 'Player 2', score: 50 },
+      ],
+    };
     mockUseDocumentData.mockReturnValue([gameState, false, undefined]);
 
     renderWithRouter(<GameBoard />);
@@ -92,5 +94,4 @@ describe('GameBoard', () => {
     expect(playerTurnElement).toBeInTheDocument();
     expect(screen.getByText('Roll Dice')).toBeInTheDocument();
   });
-
 });
