@@ -8,6 +8,13 @@
   border: 2px solid black; /* Dice border */
   position: relative;
   cursor: pointer; /* Pointer cursor on hover */
+  transition: transform 0.2s;
+}
+
+.dice.selected {
+  border-color: #ff0000; /* Red border when selected */
+  transform: scale(1.1); /* Slightly larger when selected */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Red glow when selected */
 }
 
 .face {
@@ -48,4 +55,3 @@
   75% { transform: rotate(270deg); }
   100% { transform: rotate(360deg); }
 }
-.middle-right { top: 50%; right: 10%; transform: translateY(-50%); }

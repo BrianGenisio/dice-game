@@ -3,7 +3,7 @@ import { screen, render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import GameBoard from './GameBoard';
-import { getGameDocRef } from './models/GameState';
+import { GameState, getGameDocRef } from './models/GameState';
 
 // Mock the necessary modules
 jest.mock('react-firebase-hooks/firestore');
@@ -16,11 +16,10 @@ jest.mock('./models/GameState', () => ({
 const mockUseDocumentData = useDocumentData as jest.Mock;
 const mockGetGameDocRef = getGameDocRef as jest.Mock;
 
-const inProgressGameState = {
+const inProgressGameState: GameState = {
   currentPlayer: 1,
   rolling: false,
   diceValues: [1, 2],
-  scores: [10, 5],
   state: 'inProgress',
   maxPlayers: 2,
   scoreGoal: 100,
@@ -28,6 +27,9 @@ const inProgressGameState = {
     { uid: '1', name: 'Player 1', score: 100 },
     { uid: '2', name: 'Player 2', score: 50 },
   ],
+  createdBy: 'user-id', // Add a suitable user ID
+  scoringDice: [1, 2], // Add appropriate dice values
+  turnScore: 0 // Initialize turn score
 };
 
 describe('GameBoard', () => {
@@ -69,12 +71,20 @@ describe('GameBoard', () => {
   });
 
   test('renders GameOver component when game is over', () => {
-    const gameState = {
-      gameOver: true,
+    const gameState: GameState = {
+      currentPlayer: 1,
+      rolling: false,
+      diceValues: [1, 2],
+      scoringDice: [1, 2],
+      state: 'gameOver',
+      maxPlayers: 2,
+      scoreGoal: 100,
       players: [
         { uid: '1', name: 'Player 1', score: 100 },
         { uid: '2', name: 'Player 2', score: 50 },
       ],
+      createdBy: 'user-id', // Assuming 'createdBy' is a string representing the user ID
+      turnScore: 0, // Assuming 'turnScore' is a number, set to 0 or appropriate value
     };
     mockUseDocumentData.mockReturnValue([gameState, false, undefined]);
 

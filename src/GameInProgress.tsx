@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dice from './Dice';
-import { preRoll, postRoll } from './business-logic/gameLogic';
-import { GameState, getGameDocRef, saveGameState } from './models/GameState';
+import { preRoll, postRoll, setAsideDice, endTurn } from './business-logic/gameLogic';
+import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
 
 type GameInProgressProps = {
@@ -14,25 +14,44 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   gameState,
 }) => {
   const userId = getUserId();
-  const gameDocRef = getGameDocRef(gameId);
+
+  const [selectedDice, setSelectedDice] = useState<number[]>([]);
 
   const handleRollDice = async () => {
-    if (gameDocRef) {
-      // Start the roll
-      const newGameState = preRoll(gameState, userId);
-      await saveGameState(gameId, newGameState);
+    // Start the roll
+    const newGameState = preRoll(gameState, userId);
+    await saveGameState(gameId, newGameState);
 
-      // Wait for the roll to complete
-      setTimeout(async () => {
-        const newGameState = postRoll(gameState);
-        await saveGameState(gameId, newGameState);
-      }, 1000);
-    }
+    // Wait for the roll to complete
+    setTimeout(async () => {
+      const newGameState = postRoll(gameState);
+      await saveGameState(gameId, newGameState);
+    }, 1000);
+  };
+
+  const handleDiceClick = (index: number) => {
+    setSelectedDice((prevSelectedDice) => {
+      if (prevSelectedDice.includes(index)) {
+        return prevSelectedDice.filter((i) => i !== index);
+      } else {
+        return [...prevSelectedDice, index];
+      }
+    });
+  };
+
+  const handleSetAsideDice = async () => {
+    const newGameState = setAsideDice(gameState, selectedDice);
+    await saveGameState(gameId, newGameState);
+    setSelectedDice([]); // Clear the selected dice after setting them aside
+  };
+
+  const handleEndTurn = async () => {
+    const newGameState = endTurn(gameState);
+    await saveGameState(gameId, newGameState);
   };
 
   const currentPlayer = gameState.currentPlayer;
   const rolling = gameState.rolling;
-  const diceValues = gameState.diceValues;
   const players = gameState.players;
 
   const currentPlayerName = players[currentPlayer - 1]?.name || 'Unknown Player';
@@ -40,12 +59,38 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   return (
     <>
       <h1>{currentPlayerName}'s Turn</h1>
-      <button onClick={handleRollDice} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>Roll Dice</button>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-        {diceValues.map((value, index) => (
-          <Dice key={index} value={value} rolling={rolling} />
-        ))}
+      <div>
+        <h2>Set Aside Dice:</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          {gameState.scoringDice.map((value, index) => (
+            <Dice
+              key={index}
+              value={value}
+              rolling={false}
+              selected={false}
+              onClick={() => {}}
+            />
+          ))}
+        </div>
+        <h3>Points: {gameState.scoringDice.reduce((total, value) => total + value, 0)}</h3>
       </div>
+      <div>
+        <h2>Rolling Dice:</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          {gameState.diceValues.map((value, index) => (
+            <Dice
+              key={index}
+              value={value}
+              rolling={gameState.rolling}
+              selected={selectedDice.includes(index)}
+              onClick={() => handleDiceClick(index)}
+            />
+          ))}
+        </div>
+      </div>
+      <button onClick={handleRollDice} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>Roll Dice</button>
+      <button onClick={handleSetAsideDice} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>Set Aside Selected Dice</button>
+      <button onClick={handleEndTurn} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>End Turn</button>
       {players.map((player, index) => (
         <h2 key={index}>
           {player.name} Score: {player.score} {player.uid === userId && '(You)'} {(index + 1) === currentPlayer && '←'}

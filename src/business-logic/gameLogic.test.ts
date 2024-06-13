@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GameState } from "../models/GameState";
-import { addPlayer, createGame, postRoll, preRoll } from "./gameLogic";
+import { addPlayer, createGame, postRoll, preRoll, setAsideDice } from "./gameLogic";
 
 jest.mock('uuid', () => ({
   v4: jest.fn(),
@@ -26,6 +26,8 @@ describe('rollDice', () => {
       players,
       state: 'inProgress',
       createdBy: '1',
+      scoringDice: [],
+      turnScore: 0,
     };
 
     let gameState = preRoll(initialGameState, "1");
@@ -43,6 +45,8 @@ describe('rollDice', () => {
       scoreGoal: 100,
       players,
       state: 'inProgress',
+      scoringDice: [],
+      turnScore: 0,
     });
   });
 });
@@ -75,6 +79,8 @@ describe('createGame', () => {
       players: [],
       state: 'waiting',
       createdBy: 'abc',
+      scoringDice: [],
+      turnScore: 0,
     });
   });
 });
@@ -90,6 +96,8 @@ describe('addPlayer', () => {
       state: 'waiting',
       createdBy: 'abc',
       players: [],
+      scoringDice: [],
+      turnScore: 0,
     };
 
     const gameState = addPlayer(initialGameState, 'Player2', "abc");
@@ -99,5 +107,48 @@ describe('addPlayer', () => {
       score: 0,
       uid: 'abc',
     });
+  });
+});
+
+describe('setAsideDice', () => {
+  let initialGameState: GameState;
+
+  beforeEach(() => {
+    initialGameState = {
+      diceValues: [1, 2, 3, 4, 5, 6],
+      currentPlayer: 1,
+      rolling: false,
+      scoreGoal: 100,
+      maxPlayers: 4,
+      players: [
+        { uid: 'player1', name: 'Player 1', score: 0 },
+        { uid: 'player2', name: 'Player 2', score: 0 }
+      ],
+      state: 'inProgress',
+      createdBy: 'player1',
+      scoringDice: [],
+      turnScore: 0
+    };
+  });
+
+  it('should set aside the specified dice and update the turn score', () => {
+    const diceIndices = [1, 3, 5]; // Indices to set aside
+    const newGameState = setAsideDice(initialGameState, diceIndices);
+
+    const expectedScoringDice = [2, 4, 6]; // Values at indices 1, 3, 5
+    const expectedRemainingDice = [1, 3, 5]; // Remaining dice values
+
+    expect(newGameState.scoringDice).toEqual(expectedScoringDice);
+    expect(newGameState.turnScore).toBe(2 + 4 + 6); // Sum of values at indices 1, 3, 5
+    expect(newGameState.diceValues).toEqual(expectedRemainingDice);
+  });
+
+  it('should throw an error if the game is not in progress', () => {
+    initialGameState.state = 'waiting';
+    expect(() => setAsideDice(initialGameState, [0])).toThrow('Game is not in progress');
+  });
+
+  it('should throw an error if an invalid dice index is provided', () => {
+    expect(() => setAsideDice(initialGameState, [6])).toThrow('Invalid dice index');
   });
 });

@@ -23,6 +23,8 @@ describe('WaitingRoom Component', () => {
     rolling: false,
     scoreGoal: 100,
     state: 'waiting',
+    scoringDice: [],
+    turnScore: 0,
   };
 
   beforeEach(() => {

@@ -15,8 +15,10 @@ const gameState: GameState = {
   currentPlayer: 0,
   rolling: false,
   scoreGoal: 100,
-  maxPlayers: 4, // or another appropriate value
-  createdBy: 'admin' // or another appropriate value
+  maxPlayers: 4,
+  createdBy: 'admin',
+  scoringDice: [],
+  turnScore: 0
 };
 
 describe('GameOver Component', () => {

@@ -4,9 +4,11 @@ import './Dice.css';
 interface DiceProps {
   value: number;
   rolling: boolean;
+  selected: boolean;
+  onClick: () => void;
 }
 
-const Dice: React.FC<DiceProps> = ({ value, rolling }) => {
+const Dice: React.FC<DiceProps> = ({ value, rolling, selected, onClick }) => {
   const [displayValue, setDisplayValue] = useState(value);
 
   useEffect(() => {
@@ -45,11 +47,14 @@ const Dice: React.FC<DiceProps> = ({ value, rolling }) => {
   };
 
   return (
-    <div data-testid="dice" className={`dice ${rolling ? 'rolling' : ''}`}>
+    <div
+      data-testid="dice"
+      className={`dice ${rolling ? 'rolling' : ''} ${selected ? 'selected' : ''}`}
+      onClick={onClick}
+    >
       {renderDiceFace(displayValue)}
     </div>
   );
 };
 
 export default Dice;
-

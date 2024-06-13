@@ -43,16 +43,17 @@ export const createGame = (maxPlayers: number, scoreGoal: number, createdBy: str
     players: [],
     state: 'waiting',
     createdBy,
+    scoringDice: [],
+    turnScore: 0
   };
   return { gameId, initialState };
 };
 
-const rollDiceValues = (): number[] => Array.from({ length: NUMBER_OF_DICE }, () => Math.floor(Math.random() * NUMBER_OF_DICE) + 1);
+const rollDiceValues = (numDice: number): number[] => Array.from({ length: numDice }, () => Math.floor(Math.random() * 6) + 1);
 
-const calculateNewScores = (gameState: GameState, newValues: number[]): Player[] => {
+const calculateNewScores = (gameState: GameState): Player[] => {
   const newPlayers = [...gameState.players];
-  const totalNewValue = newValues.reduce((acc, value) => acc + value, 0);
-  newPlayers[gameState.currentPlayer - 1].score += totalNewValue;
+  newPlayers[gameState.currentPlayer - 1].score += gameState.turnScore;
   return newPlayers;
 };
 
@@ -75,17 +76,54 @@ export const preRoll = (gameState: GameState, currentUserId: string): GameState 
 };
 
 export const postRoll = (gameState: GameState): GameState => {
-  const newValues = rollDiceValues();
-  const newPlayers = calculateNewScores(gameState, newValues);
+  const numDiceToRoll = 6 - gameState.scoringDice.length;
+  const newValues = rollDiceValues(numDiceToRoll);
+
+  return {
+    ...gameState,
+    diceValues: newValues,
+    rolling: false,
+  };
+};
+
+export const endTurn = (gameState: GameState): GameState => {
+  const newPlayers = calculateNewScores(gameState);
   const newGameOver = newPlayers[gameState.currentPlayer - 1].score >= gameState.scoreGoal;
   const newCurrentPlayer = determineNextPlayer(gameState, newGameOver);
 
   return {
     ...gameState,
-    diceValues: newValues,
     players: newPlayers,
-    rolling: false,
     currentPlayer: newCurrentPlayer,
     state: newGameOver ? 'gameOver' : 'inProgress',
+    turnScore: 0,
+    scoringDice: [],
+    diceValues: [1, 1, 1, 1, 1, 1]  // Reset diceValues to six dice with value 1
+  };
+};
+
+export const setAsideDice = (gameState: GameState, diceIndices: number[]): GameState => {
+  if (gameState.state !== 'inProgress') {
+    throw new Error('Game is not in progress');
+  }
+
+  const newScoringDice = [...gameState.scoringDice];
+  const remainingDiceValues = gameState.diceValues.filter((_, index) => !diceIndices.includes(index));
+  let turnScore = gameState.turnScore;
+
+  diceIndices.forEach(index => {
+    if (index < 0 || index >= gameState.diceValues.length) {
+      throw new Error('Invalid dice index');
+    }
+
+    newScoringDice.push(gameState.diceValues[index]);
+    turnScore += gameState.diceValues[index];
+  });
+
+  return {
+    ...gameState,
+    diceValues: remainingDiceValues,
+    scoringDice: newScoringDice,
+    turnScore
   };
 };

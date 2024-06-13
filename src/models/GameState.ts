@@ -15,6 +15,8 @@ export interface GameState {
   players: Player[];
   state: 'waiting' | 'inProgress' | 'gameOver';
   createdBy: string;
+  scoringDice: number[];  // New property to track dice set aside for scoring
+  turnScore: number;      // New property to track the turn score
 }
 
 // Firestore data converter for GameState

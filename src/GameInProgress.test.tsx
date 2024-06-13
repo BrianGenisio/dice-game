@@ -20,6 +20,8 @@ describe('GameInProgress', () => {
     maxPlayers: 4,
     state: 'inProgress',
     createdBy: '1',
+    scoringDice: [],
+    turnScore: 0,
   };
 
   beforeEach(() => {
