@@ -99,7 +99,8 @@ export const endTurn = (gameState: GameState): GameState => {
     macroState: newGameOver ? 'gameOver' : 'inProgress',
     turnScore: 0,
     scoringDice: [],
-    diceValues: [1, 1, 1, 1, 1, 1]  // Reset diceValues to six dice with value 1
+    diceValues: [1, 1, 1, 1, 1, 1],  // Reset diceValues to six dice with value 1
+    turnState: 'rolling'  // Set turnState back to rolling
   };
 };
 
@@ -110,23 +111,81 @@ export const setAsideDice = (gameState: GameState, diceIndices: number[]): GameS
 
   const newScoringDice = [...gameState.scoringDice];
   const remainingDiceValues = gameState.diceValues.filter((_, index) => !diceIndices.includes(index));
-  let turnScore = gameState.turnScore;
-
-  diceIndices.forEach(index => {
+  const diceToScore = diceIndices.map(index => {
     if (index < 0 || index >= gameState.diceValues.length) {
       throw new Error('Invalid dice index');
     }
-
-    newScoringDice.push(gameState.diceValues[index]);
-    turnScore += gameState.diceValues[index];
+    return gameState.diceValues[index];
   });
+
+  const { totalScore: newScore } = scoreDice(diceToScore);
+  const turnScore = gameState.turnScore + newScore;
 
   return {
     ...gameState,
     diceValues: remainingDiceValues,
-    scoringDice: newScoringDice,
+    scoringDice: [...newScoringDice, ...diceToScore],
     turnScore,
     turnState: 'deciding'  // Update turn state to "deciding"
   };
 };
 
+export const scoreDice = (dice: number[]): { totalScore: number, unscoredDice: number[], scoringDetails: { reason: string, values: number[], points: number }[] } => {
+  if (dice.length < 1 || dice.length > 6) {
+    throw new Error('Invalid number of dice');
+  }
+
+  const diceCount = new Array(7).fill(0);
+  dice.forEach(die => diceCount[die]++);
+
+  let totalScore = 0;
+  const scoringDetails: { reason: string, values: number[], points: number }[] = [];
+  const unscoredDice: number[] = [];
+
+  // Check for a straight
+  if (dice.length === 6 && diceCount.slice(1).every(count => count === 1)) {
+    return {
+      totalScore: 1500,
+      unscoredDice: [],
+      scoringDetails: [{ reason: 'Straight', values: dice, points: 1500 }]
+    };
+  }
+
+  // Check for three of a kind
+  for (let i = 1; i <= 6; i++) {
+    if (diceCount[i] >= 3) {
+      const score = (i === 1 ? 1000 : i * 100);
+      totalScore += score;
+      scoringDetails.push({ reason: 'Three of a kind', values: Array(3).fill(i), points: score });
+      diceCount[i] -= 3;
+    }
+  }
+
+  // Check for single 1s and 5s
+  if (diceCount[1] > 0) {
+    const score = diceCount[1] * 100;
+    totalScore += score;
+    scoringDetails.push({ reason: 'Single 1s', values: Array(diceCount[1]).fill(1), points: score });
+    diceCount[1] = 0;
+  }
+
+  if (diceCount[5] > 0) {
+    const score = diceCount[5] * 50;
+    totalScore += score;
+    scoringDetails.push({ reason: 'Single 5s', values: Array(diceCount[5]).fill(5), points: score });
+    diceCount[5] = 0;
+  }
+
+  // Collect unscored dice
+  for (let i = 1; i <= 6; i++) {
+    for (let j = 0; j < diceCount[i]; j++) {
+      unscoredDice.push(i);
+    }
+  }
+
+  return {
+    totalScore,
+    unscoredDice,
+    scoringDetails
+  };
+};

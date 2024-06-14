@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dice from './Dice';
-import { preRoll, postRoll, setAsideDice, endTurn } from './business-logic/gameLogic';
+import { preRoll, postRoll, setAsideDice, endTurn, scoreDice } from './business-logic/gameLogic';
 import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
 
@@ -16,6 +16,15 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const userId = getUserId();
 
   const [selectedDice, setSelectedDice] = useState<number[]>([]);
+  const [scoreDetails, setScoreDetails] = useState<{ totalScore: number, scoringDetails: { reason: string, values: number[], points: number }[] }>({ totalScore: 0, scoringDetails: [] });
+
+  useEffect(() => {
+    if (selectedDice.length > 0) {
+      const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
+      const { totalScore, scoringDetails } = scoreDice(selectedDiceValues);
+      setScoreDetails({ totalScore, scoringDetails });
+    }
+  }, [selectedDice, gameState.diceValues]);
 
   const handleRollDice = async () => {
     // Start the roll
@@ -72,7 +81,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
             />
           ))}
         </div>
-        <h3>Points: {gameState.scoringDice.reduce((total, value) => total + value, 0)}</h3>
+        <h3>Points: {gameState.turnScore}</h3>
       </div>
       <div>
         <h2>Rolling Dice:</h2>
@@ -86,6 +95,14 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
               onClick={() => handleDiceClick(index)}
             />
           ))}
+        </div>
+        <div>
+          <h3>Selected Dice Score: {scoreDetails.totalScore}</h3>
+          <ul>
+            {scoreDetails.scoringDetails.map((detail, idx) => (
+              <li key={idx}>{detail.reason}: {detail.points} points</li>
+            ))}
+          </ul>
         </div>
       </div>
       { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && (

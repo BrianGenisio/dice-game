@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GameState } from "../models/GameState";
-import { addPlayer, createGame, postRoll, preRoll, setAsideDice } from "./gameLogic";
+import { addPlayer, createGame, postRoll, preRoll, setAsideDice, scoreDice } from "./gameLogic";
 
 jest.mock('uuid', () => ({
   v4: jest.fn(),
@@ -48,7 +48,7 @@ describe('rollDice', () => {
       macroState: 'inProgress',
       scoringDice: [],
       turnScore: 0,
-      turnState: 'rolling', // Added this line
+      turnState: 'settingAside',
     });
   });
 });
@@ -137,14 +137,14 @@ describe('setAsideDice', () => {
   });
 
   it('should set aside the specified dice and update the turn score', () => {
-    const diceIndices = [1, 3, 5]; // Indices to set aside
+    const diceIndices = [0, 4]; // Indices to set aside
     const newGameState = setAsideDice(initialGameState, diceIndices);
 
-    const expectedScoringDice = [2, 4, 6]; // Values at indices 1, 3, 5
-    const expectedRemainingDice = [1, 3, 5]; // Remaining dice values
+    const expectedScoringDice = [1, 5]; // Values at indices 1, 3, 5
+    const expectedRemainingDice = [2, 3, 4, 6]; // Remaining dice values
 
     expect(newGameState.scoringDice).toEqual(expectedScoringDice);
-    expect(newGameState.turnScore).toBe(2 + 4 + 6); // Sum of values at indices 1, 3, 5
+    expect(newGameState.turnScore).toBe(150); // Sum of values at indices 1, 3, 5
     expect(newGameState.diceValues).toEqual(expectedRemainingDice);
   });
 
@@ -155,5 +155,75 @@ describe('setAsideDice', () => {
 
   it('should throw an error if an invalid dice index is provided', () => {
     expect(() => setAsideDice(initialGameState, [6])).toThrow('Invalid dice index');
+  });
+});
+
+describe('scoreDice', () => {
+  test('should throw an error for invalid number of dice', () => {
+    expect(() => scoreDice([])).toThrow('Invalid number of dice');
+    expect(() => scoreDice([1, 2, 3, 4, 5, 6, 7])).toThrow('Invalid number of dice');
+  });
+
+  test('should score a straight correctly', () => {
+    const result = scoreDice([1, 2, 3, 4, 5, 6]);
+    expect(result).toEqual({
+      totalScore: 1500,
+      unscoredDice: [],
+      scoringDetails: [
+        {
+          reason: 'Straight',
+          values: [1, 2, 3, 4, 5, 6],
+          points: 1500, // Add this line
+        },
+      ],
+    });
+  });
+
+  test('should score three of a kind correctly', () => {
+    const result = scoreDice([1, 1, 1, 2, 3, 4]);
+    expect(result).toEqual({
+      totalScore: 1000,
+      unscoredDice: [2, 3, 4],
+      scoringDetails: [
+        {
+          reason: 'Three of a kind',
+          values: [1, 1, 1],
+          points: 1000, // Add this line
+        },
+      ],
+    });
+  });
+
+  test('should score single 1s and 5s correctly', () => {
+    const result = scoreDice([1, 5, 2, 3, 6, 6]);
+    expect(result).toEqual({
+      totalScore: 150,
+      unscoredDice: [2, 3, 6, 6],
+      scoringDetails: [
+        { reason: 'Single 1s', values: [1], points: 100 },
+        { reason: 'Single 5s', values: [5], points: 50 }
+      ]
+    });
+  });
+
+  test('should score a combination of three of a kind and single 1s and 5s correctly', () => {
+    const result = scoreDice([1, 1, 1, 5, 5, 2]);
+    expect(result).toEqual({
+      totalScore: 1100,
+      unscoredDice: [2],
+      scoringDetails: [
+        { reason: 'Three of a kind', values: [1, 1, 1], points: 1000 },
+        { reason: 'Single 5s', values: [5, 5], points: 100 }
+      ]
+    });
+  });
+
+  test('should return unscored dice correctly', () => {
+    const result = scoreDice([2, 3, 4, 6]);
+    expect(result).toEqual({
+      totalScore: 0,
+      unscoredDice: [2, 3, 4, 6],
+      scoringDetails: []
+    });
   });
 });

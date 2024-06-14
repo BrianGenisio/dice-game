@@ -13,7 +13,7 @@ const NumberInput = ({ label, value, onChange }: { label: string, value: number,
 
 function Home() {
   const [maxNumberOfPlayers, setMaxNumberOfPlayers] = useState(2);
-  const [scoreGoal, setScoreGoal] = useState(100);
+  const [scoreGoal, setScoreGoal] = useState(5000);
   const navigate = useNavigate();
 
   const handleCreateGame = async () => {

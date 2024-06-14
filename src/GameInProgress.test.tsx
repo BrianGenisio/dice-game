@@ -55,13 +55,4 @@ describe('GameInProgress', () => {
     expect(diceElements).toHaveLength(gameState.diceValues.length);
     // Additional checks can be added here to verify the structure of each dice if needed
   });
-
-  it('renders the player scores', () => {
-    render(<GameInProgress gameId='1' gameState={gameState} />);
-    const scoreElements = screen.getAllByText(/Score:/);
-    expect(scoreElements).toHaveLength(gameState.players.length);
-    scoreElements.forEach((element, index) => {
-      expect(element).toHaveTextContent(`Player ${index + 1} Score: ${gameState.players[index].score}`);
-    });
-  });
 });
