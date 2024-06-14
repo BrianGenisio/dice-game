@@ -4,7 +4,6 @@ import { Player } from "../models/Player";
 
 const NUMBER_OF_DICE = 6;
 const INITIAL_DICE_VALUE = 1;
-const ROLL_DELAY_MS = 1000;
 
 export const isCurrentUserInGame = (players: Player[], currentUserId: string): boolean => {
   return players.some(player => player.uid === currentUserId);
@@ -29,7 +28,7 @@ export const startGame = (gameState: GameState, currentUserId: string): GameStat
     throw new Error('Only the game creator can start the game');
   }
 
-  return { ...gameState, state: 'inProgress' };
+  return { ...gameState, macroState: 'inProgress' };
 };
 
 export const createGame = (maxPlayers: number, scoreGoal: number, createdBy: string): { gameId: string, initialState: GameState } => {
@@ -41,7 +40,8 @@ export const createGame = (maxPlayers: number, scoreGoal: number, createdBy: str
     scoreGoal,
     maxPlayers,
     players: [],
-    state: 'waiting',
+    macroState: 'waiting',
+    turnState: 'rolling',
     createdBy,
     scoringDice: [],
     turnScore: 0
@@ -68,7 +68,7 @@ export const preRoll = (gameState: GameState, currentUserId: string): GameState 
     throw new Error('It is not your turn to roll the dice');
   }
 
-  if (gameState.state === 'gameOver' || gameState.rolling) {
+  if (gameState.macroState === 'gameOver' || gameState.rolling) {
     return gameState;
   }
 
@@ -83,6 +83,7 @@ export const postRoll = (gameState: GameState): GameState => {
     ...gameState,
     diceValues: newValues,
     rolling: false,
+    turnState: 'settingAside',  // Update turn state to "settingAside"
   };
 };
 
@@ -95,7 +96,7 @@ export const endTurn = (gameState: GameState): GameState => {
     ...gameState,
     players: newPlayers,
     currentPlayer: newCurrentPlayer,
-    state: newGameOver ? 'gameOver' : 'inProgress',
+    macroState: newGameOver ? 'gameOver' : 'inProgress',
     turnScore: 0,
     scoringDice: [],
     diceValues: [1, 1, 1, 1, 1, 1]  // Reset diceValues to six dice with value 1
@@ -103,7 +104,7 @@ export const endTurn = (gameState: GameState): GameState => {
 };
 
 export const setAsideDice = (gameState: GameState, diceIndices: number[]): GameState => {
-  if (gameState.state !== 'inProgress') {
+  if (gameState.macroState !== 'inProgress') {
     throw new Error('Game is not in progress');
   }
 
@@ -124,6 +125,8 @@ export const setAsideDice = (gameState: GameState, diceIndices: number[]): GameS
     ...gameState,
     diceValues: remainingDiceValues,
     scoringDice: newScoringDice,
-    turnScore
+    turnScore,
+    turnState: 'deciding'  // Update turn state to "deciding"
   };
 };
+

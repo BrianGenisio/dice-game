@@ -20,7 +20,8 @@ const inProgressGameState: GameState = {
   currentPlayer: 1,
   rolling: false,
   diceValues: [1, 2],
-  state: 'inProgress',
+  macroState: 'inProgress',
+  turnState: 'rolling',
   maxPlayers: 2,
   scoreGoal: 100,
   players: [
@@ -76,7 +77,8 @@ describe('GameBoard', () => {
       rolling: false,
       diceValues: [1, 2],
       scoringDice: [1, 2],
-      state: 'gameOver',
+      macroState: 'gameOver',
+      turnState: 'rolling',
       maxPlayers: 2,
       scoreGoal: 100,
       players: [

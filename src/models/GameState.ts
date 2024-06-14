@@ -13,10 +13,11 @@ export interface GameState {
   scoreGoal: number;
   maxPlayers: number;
   players: Player[];
-  state: 'waiting' | 'inProgress' | 'gameOver';
+  macroState: 'waiting' | 'inProgress' | 'gameOver';
+  turnState: 'rolling' | 'settingAside' | 'deciding';
   createdBy: string;
-  scoringDice: number[];  // New property to track dice set aside for scoring
-  turnScore: number;      // New property to track the turn score
+  scoringDice: number[];
+  turnScore: number;
 }
 
 // Firestore data converter for GameState

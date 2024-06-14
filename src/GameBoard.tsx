@@ -21,12 +21,12 @@ export default function GameBoard() {
 
   return (
     <div>
-      {gameState.state === 'waiting' ? (
+      {gameState.macroState === 'waiting' ? (
         <WaitingRoom
           gameId={gameId}
           gameState={gameState}
         />
-      ) : gameState.state === 'inProgress' ? (
+      ) : gameState.macroState === 'inProgress' ? (
         <GameInProgress
           gameId={gameId}
           gameState={gameState}

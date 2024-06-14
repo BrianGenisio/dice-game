@@ -22,7 +22,8 @@ describe('WaitingRoom Component', () => {
     currentPlayer: 1,
     rolling: false,
     scoreGoal: 100,
-    state: 'waiting',
+    macroState: 'waiting',
+    turnState: 'rolling',
     scoringDice: [],
     turnScore: 0,
   };

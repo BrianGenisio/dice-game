@@ -10,7 +10,8 @@ const players: Player[] = [
 
 const gameState: GameState = {
   players: players,
-  state: 'gameOver',
+  macroState: 'gameOver',
+  turnState: 'rolling',
   diceValues: [],
   currentPlayer: 0,
   rolling: false,

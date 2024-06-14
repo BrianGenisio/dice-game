@@ -88,9 +88,27 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           ))}
         </div>
       </div>
-      <button onClick={handleRollDice} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>Roll Dice</button>
-      <button onClick={handleSetAsideDice} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>Set Aside Selected Dice</button>
-      <button onClick={handleEndTurn} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>End Turn</button>
+      { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && (
+        <button
+          onClick={handleRollDice}
+          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
+        >
+          Roll Dice
+        </button>
+      )}
+      {gameState.turnState === 'settingAside' && (
+        <button
+          onClick={handleSetAsideDice}
+          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
+        >
+          Set Aside Selected Dice
+        </button>
+      )}
+      {gameState.turnState === 'deciding' && (
+        <button onClick={handleEndTurn} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>
+          End Turn
+        </button>
+      )}
       {players.map((player, index) => (
         <h2 key={index}>
           {player.name} Score: {player.score} {player.uid === userId && '(You)'} {(index + 1) === currentPlayer && '←'}

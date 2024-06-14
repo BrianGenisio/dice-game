@@ -24,10 +24,11 @@ describe('rollDice', () => {
       scoreGoal: 100,
       maxPlayers: 2,
       players,
-      state: 'inProgress',
+      macroState: 'inProgress',
       createdBy: '1',
       scoringDice: [],
       turnScore: 0,
+      turnState: 'rolling', // Changed this line
     };
 
     let gameState = preRoll(initialGameState, "1");
@@ -44,9 +45,10 @@ describe('rollDice', () => {
       maxPlayers: 2,
       scoreGoal: 100,
       players,
-      state: 'inProgress',
+      macroState: 'inProgress',
       scoringDice: [],
       turnScore: 0,
+      turnState: 'rolling', // Added this line
     });
   });
 });
@@ -77,10 +79,11 @@ describe('createGame', () => {
       scoreGoal,
       maxPlayers,
       players: [],
-      state: 'waiting',
+      macroState: 'waiting',
       createdBy: 'abc',
       scoringDice: [],
       turnScore: 0,
+      turnState: 'rolling', // Added this line
     });
   });
 });
@@ -93,11 +96,12 @@ describe('addPlayer', () => {
       rolling: false,
       scoreGoal: 100,
       maxPlayers: 4,
-      state: 'waiting',
+      macroState: 'waiting',
       createdBy: 'abc',
       players: [],
       scoringDice: [],
       turnScore: 0,
+      turnState: 'rolling', // Added this line
     };
 
     const gameState = addPlayer(initialGameState, 'Player2', "abc");
@@ -124,10 +128,11 @@ describe('setAsideDice', () => {
         { uid: 'player1', name: 'Player 1', score: 0 },
         { uid: 'player2', name: 'Player 2', score: 0 }
       ],
-      state: 'inProgress',
+      macroState: 'inProgress',
       createdBy: 'player1',
       scoringDice: [],
-      turnScore: 0
+      turnScore: 0,
+      turnState: 'rolling', // Added this line
     };
   });
 
@@ -144,7 +149,7 @@ describe('setAsideDice', () => {
   });
 
   it('should throw an error if the game is not in progress', () => {
-    initialGameState.state = 'waiting';
+    initialGameState.macroState = 'waiting';
     expect(() => setAsideDice(initialGameState, [0])).toThrow('Game is not in progress');
   });
 
