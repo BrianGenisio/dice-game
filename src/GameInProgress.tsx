@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Dice from './Dice';
 import { preRoll, postRoll, setAsideDice, endTurn, scoreDice } from './business-logic/gameLogic';
 import { GameState, saveGameState } from './models/GameState';
@@ -16,15 +16,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const userId = getUserId();
 
   const [selectedDice, setSelectedDice] = useState<number[]>([]);
-  const [scoreDetails, setScoreDetails] = useState<{ totalScore: number, scoringDetails: { reason: string, values: number[], points: number }[] }>({ totalScore: 0, scoringDetails: [] });
+  const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
+  const { totalScore: selectedDiceScore, scoringDetails } = scoreDice(selectedDiceValues);
+  const { totalScore: diceValuesScore } = scoreDice(gameState.diceValues);
 
-  useEffect(() => {
-    if (selectedDice.length > 0) {
-      const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
-      const { totalScore, scoringDetails } = scoreDice(selectedDiceValues);
-      setScoreDetails({ totalScore, scoringDetails });
-    }
-  }, [selectedDice, gameState.diceValues]);
+  const hasCutTheCheese = gameState.turnState === 'settingAside' && diceValuesScore === 0;
 
   const handleRollDice = async () => {
     // Start the roll
@@ -55,7 +51,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   };
 
   const handleEndTurn = async () => {
-    const newGameState = endTurn(gameState);
+    const newGameState = endTurn(gameState, hasCutTheCheese);
     await saveGameState(gameId, newGameState);
   };
 
@@ -97,12 +93,15 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           ))}
         </div>
         <div>
-          <h3>Selected Dice Score: {scoreDetails.totalScore}</h3>
+          <h3>Selected Dice Score: {selectedDiceScore}</h3>
           <ul>
-            {scoreDetails.scoringDetails.map((detail, idx) => (
+            {scoringDetails.map((detail, idx) => (
               <li key={idx}>{detail.reason}: {detail.points} points</li>
             ))}
           </ul>
+        </div>
+        <div>
+          {diceValuesScore === 0 && <h3>You cut the cheese</h3>}
         </div>
       </div>
       { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && (
@@ -113,7 +112,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           Roll Dice
         </button>
       )}
-      {gameState.turnState === 'settingAside' && (
+      {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
         <button
           onClick={handleSetAsideDice}
           disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
@@ -121,7 +120,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           Set Aside Selected Dice
         </button>
       )}
-      {gameState.turnState === 'deciding' && (
+      {(gameState.turnState === 'deciding' || hasCutTheCheese) && (
         <button onClick={handleEndTurn} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>
           End Turn
         </button>

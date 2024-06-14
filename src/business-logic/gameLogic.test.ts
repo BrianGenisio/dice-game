@@ -159,8 +159,12 @@ describe('setAsideDice', () => {
 });
 
 describe('scoreDice', () => {
-  test('should throw an error for invalid number of dice', () => {
-    expect(() => scoreDice([])).toThrow('Invalid number of dice');
+  test('should throw an error for empty dice array', () => {
+    const result = scoreDice([]);
+    expect(result).toEqual({ totalScore: 0, unscoredDice: [], scoringDetails: [] });
+  });
+
+  test('should throw an error for too many dice', () => {
     expect(() => scoreDice([1, 2, 3, 4, 5, 6, 7])).toThrow('Invalid number of dice');
   });
 

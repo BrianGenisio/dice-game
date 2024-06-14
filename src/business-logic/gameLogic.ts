@@ -87,8 +87,8 @@ export const postRoll = (gameState: GameState): GameState => {
   };
 };
 
-export const endTurn = (gameState: GameState): GameState => {
-  const newPlayers = calculateNewScores(gameState);
+export const endTurn = (gameState: GameState, cutTheCheese: boolean): GameState => {
+  const newPlayers = cutTheCheese ? gameState.players : calculateNewScores(gameState);
   const newGameOver = newPlayers[gameState.currentPlayer - 1].score >= gameState.scoreGoal;
   const newCurrentPlayer = determineNextPlayer(gameState, newGameOver);
 
@@ -131,7 +131,11 @@ export const setAsideDice = (gameState: GameState, diceIndices: number[]): GameS
 };
 
 export const scoreDice = (dice: number[]): { totalScore: number, unscoredDice: number[], scoringDetails: { reason: string, values: number[], points: number }[] } => {
-  if (dice.length < 1 || dice.length > 6) {
+  if (dice.length < 1) {
+    return { totalScore: 0, unscoredDice: [], scoringDetails: [] };
+  }
+
+  if (dice.length > 6) {
     throw new Error('Invalid number of dice');
   }
 
