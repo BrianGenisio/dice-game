@@ -3,6 +3,7 @@ import Dice from './Dice';
 import { preRoll, postRoll, setAsideDice, endTurn, scoreDice } from './business-logic/gameLogic';
 import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
+import './Home.css'; // Import the CSS file
 
 type GameInProgressProps = {
   gameId: string;
@@ -24,11 +25,9 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const hasCutTheCheese = gameState.turnState === 'settingAside' && (diceValuesScore === 0 || hasPassedTheCheese);
 
   const handleRollDice = async () => {
-    // Start the roll
     const newGameState = preRoll(gameState, userId);
     await saveGameState(gameId, newGameState);
 
-    // Wait for the roll to complete
     setTimeout(async () => {
       const newGameState = postRoll(gameState);
       await saveGameState(gameId, newGameState);
@@ -48,7 +47,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const handleSetAsideDice = async () => {
     const newGameState = setAsideDice(gameState, selectedDice);
     await saveGameState(gameId, newGameState);
-    setSelectedDice([]); // Clear the selected dice after setting them aside
+    setSelectedDice([]);
   };
 
   const handleEndTurn = async () => {
@@ -63,11 +62,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const currentPlayerName = players[currentPlayer - 1]?.name || 'Unknown Player';
 
   return (
-    <>
-      <h1>{currentPlayerName}'s Turn</h1>
-      <div>
+    <div className="game-container">
+      <h1 className="title">{currentPlayerName}'s Turn</h1>
+      <div className="dice-section">
         <h2>Set Aside Dice:</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <div className="dice-container">
           {gameState.scoringDice.map((value, index) => (
             <Dice
               key={index}
@@ -80,9 +79,9 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
         </div>
         <h3>Points: {gameState.turnScore}</h3>
       </div>
-      <div>
+      <div className="dice-section">
         <h2>Rolling Dice:</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <div className="dice-container">
           {gameState.diceValues.map((value, index) => (
             <Dice
               key={index}
@@ -108,6 +107,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       </div>
       { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
         <button
+          className="create-game-button"
           onClick={handleRollDice}
           disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
         >
@@ -116,6 +116,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       )}
       {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
         <button
+          className="create-game-button"
           onClick={handleSetAsideDice}
           disabled={rolling || players[currentPlayer - 1]?.uid !== userId || unscoredDice.length > 0 || selectedDice.length === 0}
         >
@@ -123,7 +124,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
         </button>
       )}
       {(gameState.turnState === 'deciding' || hasCutTheCheese) && (
-        <button onClick={handleEndTurn} disabled={rolling || players[currentPlayer - 1]?.uid !== userId}>
+        <button
+          className="create-game-button"
+          onClick={handleEndTurn}
+          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
+        >
           End Turn
         </button>
       )}
@@ -132,7 +137,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           {player.name} Score: {player.score} {player.uid === userId && '(You)'} {(index + 1) === currentPlayer && '←'}
         </h2>
       ))}
-    </>
+    </div>
   );
 };
 

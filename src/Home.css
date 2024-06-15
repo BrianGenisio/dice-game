@@ -1,0 +1,112 @@
+/* Apply the background color to the entire page */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff8dc;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.centered-container {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.game-container {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.dice-section {
+  margin-bottom: 20px;
+}
+
+.dice-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.header-image {
+  width: 350px; /* Increase the size of the image */
+  margin-bottom: 20px;
+  border: 5px solid #ff6347; /* Add a border to make it more pronounced */
+  border-radius: 15px; /* Add rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for more emphasis */
+}
+
+.title {
+  font-size: 2.5em;
+  color: #ff6347;
+  margin-bottom: 20px;
+}
+
+.number-input {
+  display: block;
+  margin: 10px auto;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.number-input input {
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 1em;
+  border: 2px solid #ff6347;
+  border-radius: 5px;
+}
+
+.create-game-button {
+  background-color: #ff6347;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-game-button:hover {
+  background-color: #ff4500;
+}
+
+.create-game-button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.score-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.score-item {
+  font-size: 1.2em;
+  margin: 0.5em 0;
+}
+
+.player-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.player-item {
+  font-size: 1.2em;
+}
+
+.current-player {
+  font-weight: bold;
+}

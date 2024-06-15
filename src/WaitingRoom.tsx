@@ -4,6 +4,7 @@ import { isCurrentUserInGame, startGame } from "./business-logic/gameLogic";
 import { saveGameState } from './models/GameState';
 import { addPlayer } from './business-logic/gameLogic';
 import { GameState } from './models/GameState';
+import './Home.css';
 
 interface WaitingRoomProps {
   gameId: string;
@@ -26,11 +27,12 @@ const WaitingRoom: React.FC<WaitingRoomProps> = ({ gameId, gameState }) => {
   };
 
   return (
-    <div>
-      <h2>Waiting Room</h2>
-      <ul>
+    <div className="waiting-room-container centered-container">
+      <img src="/Waiting-Room.webp" alt="Waiting Room" className="header-image" />
+      <h2 className="title">Waiting Room</h2>
+      <ul className="player-list">
         {gameState.players.map((player, index) => (
-          <li key={index} style={{ fontWeight: player.uid === currentUserId ? 'bold' : 'normal' }}>
+          <li key={index} className={`player-item ${player.uid === currentUserId ? 'current-player' : ''}`}>
             {player.name}
           </li>
         ))}
@@ -42,12 +44,20 @@ const WaitingRoom: React.FC<WaitingRoomProps> = ({ gameId, gameState }) => {
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             placeholder="Enter your name"
+            className="number-input"
           />
-          <button onClick={() => handleAddPlayer(playerName)}>Add Player</button>
+          <button onClick={() => handleAddPlayer(playerName)} className="create-game-button" style={{ marginRight: '10px' }}>Add Player</button>
         </>
       )}
       {currentUserId === gameState.createdBy ? (
-        <button onClick={handleStartGame}>Start Game</button>
+        <button
+          onClick={handleStartGame}
+          className="create-game-button"
+          style={{ marginTop: '10px' }}
+          disabled={gameState.players.length === 0}
+        >
+          Start Game
+        </button>
       ) : (
         isPlayerInGame && <p>Waiting for the game creator to start the game...</p>
       )}

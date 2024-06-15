@@ -1,5 +1,6 @@
 import { GameState } from './models/GameState';
 import { getUserId } from './models/Player';
+import './Home.css'; // Import the CSS file for styling
 
 interface GameOverProps {
   gameState: GameState;
@@ -12,12 +13,13 @@ const GameOver: React.FC<GameOverProps> = ({ gameState }) => {
   const isUserWinner = winner.uid === userId;
 
   return (
-    <div>
-      <h1>Game Over! {isUserWinner ? 'You' : `${winner.name}`} win{isUserWinner ? '' : 's'} with {winner.score} points!</h1>
+    <div className="centered-container">
+      <img src="/Winner.webp" alt="Winner" className="header-image" />
+      <h1 className="title">Game Over! {isUserWinner ? 'You' : `${winner.name}`} win{isUserWinner ? '' : 's'} with {winner.score} points!</h1>
       <h2>Final Scores:</h2>
-      <ul>
+      <ul className="score-list">
         {players.map((player, index) => (
-          <li key={index}>{player.name}: {player.score} points</li>
+          <li key={index} className="score-item">{player.name}: {player.score} points</li>
         ))}
       </ul>
     </div>

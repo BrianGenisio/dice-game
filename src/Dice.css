@@ -4,17 +4,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white; /* Dice background */
-  border: 2px solid black; /* Dice border */
+  background-color: #FFD700; /* Cheese-like yellow background */
+  border: 2px solid #DAA520; /* Golden border to match cheese theme */
   position: relative;
   cursor: pointer; /* Pointer cursor on hover */
   transition: transform 0.2s;
+  background-image: radial-gradient(circle, #FFD700 20%, #FFA500 100%); /* Cheese texture */
 }
 
 .dice.selected {
-  border-color: #ff0000; /* Red border when selected */
+  border-color: #FF4500; /* Darker red border when selected */
   transform: scale(1.1); /* Slightly larger when selected */
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Red glow when selected */
+  box-shadow: 0 0 10px rgba(255, 69, 0, 0.5); /* Red glow when selected */
 }
 
 .face {
@@ -31,7 +32,7 @@
 .dot {
   width: 20px; /* Size of the dots */
   height: 20px;
-  background-color: black; /* Dot color */
+  background-color: #8B4513; /* Dark brown dot color */
   border-radius: 50%; /* Round dots */
   position: absolute;
 }
