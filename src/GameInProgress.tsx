@@ -17,10 +17,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
 
   const [selectedDice, setSelectedDice] = useState<number[]>([]);
   const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
-  const { totalScore: selectedDiceScore, scoringDetails } = scoreDice(selectedDiceValues);
+  const { totalScore: selectedDiceScore, unscoredDice, scoringDetails } = scoreDice(selectedDiceValues);
   const { totalScore: diceValuesScore } = scoreDice(gameState.diceValues);
 
-  const hasCutTheCheese = gameState.turnState === 'settingAside' && diceValuesScore === 0;
+  const hasPassedTheCheese = gameState.diceValues.length === 0;
+  const hasCutTheCheese = gameState.turnState === 'settingAside' && (diceValuesScore === 0 || hasPassedTheCheese);
 
   const handleRollDice = async () => {
     // Start the roll
@@ -101,10 +102,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           </ul>
         </div>
         <div>
-          {diceValuesScore === 0 && <h3>You cut the cheese</h3>}
+          {hasCutTheCheese && <h3>💨 You cut the cheese 💨</h3>}
+          {hasPassedTheCheese && <h3>🎉 Congratulations! You passed the cheese! 🎉</h3>}
         </div>
       </div>
-      { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && (
+      { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
         <button
           onClick={handleRollDice}
           disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
@@ -115,7 +117,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
         <button
           onClick={handleSetAsideDice}
-          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
+          disabled={rolling || players[currentPlayer - 1]?.uid !== userId || unscoredDice.length > 0 || selectedDice.length === 0}
         >
           Set Aside Selected Dice
         </button>
