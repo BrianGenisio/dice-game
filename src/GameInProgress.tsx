@@ -4,6 +4,7 @@ import { preRoll, postRoll, setAsideDice, endTurn, scoreDice } from './business-
 import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
 import './Home.css'; // Import the CSS file
+import Scoreboard from './Scoreboard';
 
 type GameInProgressProps = {
   gameId: string;
@@ -138,11 +139,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           End Turn
         </button>
       )}
-      {players.map((player, index) => (
-        <h2 key={index}>
-          {player.name} Score: {player.score} {player.uid === userId && '(You)'} {(index + 1) === currentPlayer && '←'}
-        </h2>
-      ))}
+      <Scoreboard players={players} currentPlayer={currentPlayer} userId={userId} />
     </div>
   );
 };
