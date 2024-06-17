@@ -54,6 +54,9 @@ const rollDiceValues = (numDice: number): number[] => Array.from({ length: numDi
 const calculateNewScores = (gameState: GameState): Player[] => {
   const newPlayers = [...gameState.players];
   newPlayers[gameState.currentPlayer - 1].score += gameState.turnScore;
+  if (gameState.diceValues.length === 0) {
+    newPlayers[gameState.currentPlayer - 1].score += 500;  // Bonus for passing the cheese
+  }
   return newPlayers;
 };
 
@@ -88,7 +91,8 @@ export const postRoll = (gameState: GameState): GameState => {
 };
 
 export const endTurn = (gameState: GameState, cutTheCheese: boolean): GameState => {
-  const newPlayers = cutTheCheese ? gameState.players : calculateNewScores(gameState);
+  let newPlayers = cutTheCheese ? gameState.players : calculateNewScores(gameState);
+
   const newGameOver = newPlayers[gameState.currentPlayer - 1].score >= gameState.scoreGoal;
   const newCurrentPlayer = determineNextPlayer(gameState, newGameOver);
 

@@ -102,7 +102,13 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
         </div>
         <div>
           {hasCutTheCheese && <h3>💨 You cut the cheese 💨</h3>}
-          {hasPassedTheCheese && <h3>🎉 Congratulations! You passed the cheese! 🎉</h3>}
+          {hasPassedTheCheese && (
+            <h3>
+              🎉 Congratulations! You passed the cheese! 🎉
+              <br />
+              You got a 500 point bonus!
+            </h3>
+          )}
         </div>
       </div>
       { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
