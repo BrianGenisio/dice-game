@@ -103,10 +103,24 @@ body, html {
   list-style-type: none;
 }
 
-.player-item {
+.home-player-item {
   font-size: 1.2em;
 }
 
 .current-player {
   font-weight: bold;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center-justify the buttons */
+  gap: 10px; /* Adjust the value as needed */
+}
+
+.set-aside-section {
+  border: 2px solid #ff6347; /* Add a border */
+  border-radius: 10px; /* Rounded corners */
+  padding: 10px; /* Padding inside the box */
+  margin-bottom: 20px; /* Space below the box */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a shadow */
 }

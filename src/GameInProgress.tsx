@@ -25,6 +25,13 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   const hasPassedTheCheese = gameState.diceValues.length === 0;
   const hasCutTheCheese = gameState.turnState === 'settingAside' && (diceValuesScore === 0 || hasPassedTheCheese);
 
+  const currentPlayer = gameState.currentPlayer;
+  const rolling = gameState.rolling;
+  const players = gameState.players;
+
+  const currentPlayerName = players[currentPlayer - 1]?.name || 'Unknown Player';
+  const isCurrentUser = players[currentPlayer - 1]?.uid === userId;
+
   const handleRollDice = async () => {
     const newGameState = preRoll(gameState, userId);
     await saveGameState(gameId, newGameState);
@@ -36,13 +43,15 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   };
 
   const handleDiceClick = (index: number) => {
-    setSelectedDice((prevSelectedDice) => {
-      if (prevSelectedDice.includes(index)) {
-        return prevSelectedDice.filter((i) => i !== index);
-      } else {
-        return [...prevSelectedDice, index];
-      }
-    });
+    if (isCurrentUser && gameState.turnState === 'settingAside') {
+      setSelectedDice((prevSelectedDice) => {
+        if (prevSelectedDice.includes(index)) {
+          return prevSelectedDice.filter((i) => i !== index);
+        } else {
+          return [...prevSelectedDice, index];
+        }
+      });
+    }
   };
 
   const handleSetAsideDice = async () => {
@@ -56,32 +65,26 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
     await saveGameState(gameId, newGameState);
   };
 
-  const currentPlayer = gameState.currentPlayer;
-  const rolling = gameState.rolling;
-  const players = gameState.players;
-
-  const currentPlayerName = players[currentPlayer - 1]?.name || 'Unknown Player';
-
   return (
     <div className="game-container">
       <h1 className="title">{currentPlayerName}'s Turn</h1>
-      <div className="dice-section">
-        <h2>Set Aside Dice:</h2>
-        <div className="dice-container">
-          {gameState.scoringDice.map((value, index) => (
-            <Dice
-              key={index}
-              value={value}
-              rolling={false}
-              selected={false}
-              onClick={() => {}}
-            />
-          ))}
+      {gameState.scoringDice.length > 0 && (
+        <div className="dice-section set-aside-section">
+          <h2>Set Aside: {gameState.turnScore} points</h2>
+          <div className="dice-container">
+            {gameState.scoringDice.map((value, index) => (
+              <Dice
+                key={index}
+                value={value}
+                rolling={false}
+                selected={false}
+                onClick={() => {}}
+              />
+            ))}
+          </div>
         </div>
-        <h3>Points: {gameState.turnScore}</h3>
-      </div>
+      )}
       <div className="dice-section">
-        <h2>Rolling Dice:</h2>
         <div className="dice-container">
           {gameState.diceValues.map((value, index) => (
             <Dice
@@ -93,14 +96,16 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
             />
           ))}
         </div>
-        <div>
-          <h3>Selected Dice Score: {selectedDiceScore}</h3>
-          <ul>
-            {scoringDetails.map((detail, idx) => (
-              <li key={idx}>{detail.reason}: {detail.points} points</li>
-            ))}
-          </ul>
-        </div>
+        {isCurrentUser && selectedDice.length > 0 && (
+          <div>
+            <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+              {scoringDetails.map((detail, idx) => (
+                <li key={idx}>{detail.reason}: {detail.points} points</li>
+              ))}
+            </ul>
+            <h3>Total: {selectedDiceScore}</h3>
+          </div>
+        )}
         <div>
           {hasCutTheCheese && <h3>💨 You cut the cheese 💨</h3>}
           {hasPassedTheCheese && (
@@ -112,32 +117,36 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           )}
         </div>
       </div>
-      { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
-        <button
-          className="create-game-button"
-          onClick={handleRollDice}
-          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
-        >
-          Roll Dice
-        </button>
-      )}
-      {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
-        <button
-          className="create-game-button"
-          onClick={handleSetAsideDice}
-          disabled={rolling || players[currentPlayer - 1]?.uid !== userId || unscoredDice.length > 0 || selectedDice.length === 0}
-        >
-          Set Aside Selected Dice
-        </button>
-      )}
-      {(gameState.turnState === 'deciding' || hasCutTheCheese) && (
-        <button
-          className="create-game-button"
-          onClick={handleEndTurn}
-          disabled={rolling || players[currentPlayer - 1]?.uid !== userId}
-        >
-          End Turn
-        </button>
+      {isCurrentUser && (
+        <div className="button-container">
+          { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
+            <button
+              className="create-game-button"
+              onClick={handleRollDice}
+              disabled={rolling || !isCurrentUser}
+            >
+              Roll Dice
+            </button>
+          )}
+          {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
+            <button
+              className="create-game-button"
+              onClick={handleSetAsideDice}
+              disabled={rolling || !isCurrentUser || unscoredDice.length > 0 || selectedDice.length === 0}
+            >
+              Set Aside Selected Dice
+            </button>
+          )}
+          {(gameState.turnState === 'deciding' || hasCutTheCheese) && (
+            <button
+              className="create-game-button"
+              onClick={handleEndTurn}
+              disabled={rolling || !isCurrentUser}
+            >
+              End Turn
+            </button>
+          )}
+        </div>
       )}
       <Scoreboard players={players} currentPlayer={currentPlayer} userId={userId} />
     </div>

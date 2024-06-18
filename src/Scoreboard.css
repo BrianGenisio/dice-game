@@ -20,7 +20,7 @@
   padding: 0;
 }
 
-.player-item {
+.scoreboard .player-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,40 +32,40 @@
   position: relative;
 }
 
-.player-item:hover {
+.scoreboard .player-item:hover {
   background-color: #f0f0f0;
 }
 
-.current-player {
+.scoreboard .current-player {
   font-weight: bold;
   color: #ff4500;
 }
 
-.user-player {
+.scoreboard .user-player {
   background-color: #e0f7fa;
 }
 
-.player-name, .player-score {
+.scoreboard .player-name, .scoreboard .player-score {
   text-align: left;
 }
 
-.player-name {
+.scoreboard .player-name {
   width: 40%;
 }
 
-.player-score {
+.scoreboard .player-score {
   width: 20%;
   text-align: center;
 }
 
-.player-you {
+.scoreboard .player-you {
   position: absolute;
   right: 10px;
   color: #00796b;
   font-style: italic;
 }
 
-.player-arrow {
+.scoreboard .player-arrow {
   position: absolute;
   left: calc(100% + 10px);
   color: #ff4500;

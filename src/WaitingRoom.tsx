@@ -30,7 +30,7 @@ const WaitingRoom: React.FC<WaitingRoomProps> = ({ gameId, gameState }) => {
     <div className="waiting-room-container centered-container">
       <img src="/Waiting-Room.webp" alt="Waiting Room" className="header-image" />
       <h2 className="title">Waiting Room</h2>
-      <ul className="player-list">
+      <ul className="player-list" style={{ textAlign: 'center' }}>
         {gameState.players.map((player, index) => (
           <li key={index} className={`player-item ${player.uid === currentUserId ? 'current-player' : ''}`}>
             {player.name}
