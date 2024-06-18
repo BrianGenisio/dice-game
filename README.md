@@ -1,10 +1,10 @@
-# Dice Game
+# Pass the Cheese!
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Overview
 
-Dice Game is a simple multiplayer game where players take turns rolling dice to accumulate points. The first player to reach the score goal wins the game.
+Pass the Cheese! is a simple multiplayer game where players take turns rolling dice to accumulate points. The first player to reach the score goal wins the game.
 
 ## Available Scripts
 
@@ -58,14 +58,14 @@ yarn start
 
 ## Contributing
 
-We welcome contributions to the Dice Game project! However, please note that only AI-generated code is allowed. Here are the steps to contribute:
+We welcome contributions to the Pass the Cheese! project! However, please note that only AI-generated code is allowed. Here are the steps to contribute:
 
 1. **Fork the Repository**: Start by forking the repository to your GitHub account.
 
 2. **Clone the Repository**: Clone the forked repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/dice-game.git
+   git clone https://github.com/your-username/pass-the-cheese.git
    ```
 
 3. **Create a New Branch**: Create a new branch for your feature or bug fix.
@@ -101,4 +101,3 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-

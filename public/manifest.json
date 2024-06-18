@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Pass the Cheese!",
+  "name": "Pass the Cheese! - A Multiplayer Dice Game",
   "icons": [
     {
       "src": "favicon.ico",
