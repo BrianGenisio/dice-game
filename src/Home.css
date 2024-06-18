@@ -19,6 +19,7 @@ body, html {
 }
 
 .game-container {
+  position: relative; /* Add this line */
   text-align: center;
   padding: 20px;
   border-radius: 10px;
@@ -123,4 +124,81 @@ body, html {
   padding: 10px; /* Padding inside the box */
   margin-bottom: 20px; /* Space below the box */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a shadow */
+}
+
+.help-button {
+  position: absolute; /* Add this line */
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  background: none;
+  border: none;
+  color: #ff6347;
+  font-size: 1em;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.help-button:hover {
+  color: #ff4500;
+}
+
+/* Styles for the help modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-width: 90%;
+  width: 500px;
+}
+
+.modal-content {
+  position: relative;
+  text-align: left; /* Add this line */
+}
+
+.modal-content h2 {
+  color: #ff6347;
+  margin-bottom: 10px;
+}
+
+.modal-content ul {
+  padding-left: 20px; /* Adjust as needed for indentation */
+  margin-left: 0; /* Ensure no left margin */
+  list-style-type: disc; /* Add this line to show bullets */
+}
+
+.modal-content ul ul {
+  padding-left: 40px; /* Indent nested lists */
+  margin-left: 0; /* Ensure no additional left margin */
+  list-style-type: circle; /* Add this line for nested bullets */
+}
+
+.modal-content li {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.modal-content li ul li {
+  margin-bottom: 5px;
+}
+
+.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #ff6347;
+  padding: 10px; /* Optional: Add padding for better click area */
+}
+
+.close:hover {
+  color: #ff4500;
 }

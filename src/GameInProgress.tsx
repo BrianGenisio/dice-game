@@ -5,6 +5,7 @@ import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
 import './Home.css'; // Import the CSS file
 import Scoreboard from './Scoreboard';
+import HelpModal from './HelpModal';
 
 type GameInProgressProps = {
   gameId: string;
@@ -16,8 +17,9 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   gameState,
 }) => {
   const userId = getUserId();
-
   const [selectedDice, setSelectedDice] = useState<number[]>([]);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+
   const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
   const { totalScore: selectedDiceScore, unscoredDice, scoringDetails } = scoreDice(selectedDiceValues);
   const { totalScore: diceValuesScore } = scoreDice(gameState.diceValues);
@@ -65,9 +67,15 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
     await saveGameState(gameId, newGameState);
   };
 
+  const toggleHelpModal = () => {
+    setIsHelpModalOpen(!isHelpModalOpen);
+  };
+
   return (
     <div className="game-container">
       <h1 className="title">{currentPlayerName}'s Turn</h1>
+      <button onClick={toggleHelpModal} className="help-button">Help</button>
+      <HelpModal isOpen={isHelpModalOpen} onClose={toggleHelpModal} />
       {gameState.scoringDice.length > 0 && (
         <div className="dice-section set-aside-section">
           <h2>Set Aside: {gameState.turnScore} points</h2>
