@@ -6,6 +6,7 @@ import { getUserId } from './models/Player';
 import './Home.css'; // Import the CSS file
 import Scoreboard from './Scoreboard';
 import HelpModal from './HelpModal';
+import Deck from './Deck';
 
 type GameInProgressProps = {
   gameId: string;
@@ -76,6 +77,10 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       <h1 className="title">{currentPlayerName}'s Turn</h1>
       <button onClick={toggleHelpModal} className="help-button">Help</button>
       <HelpModal isOpen={isHelpModalOpen} onClose={toggleHelpModal} />
+
+      {/* Add the Deck component here */}
+      <Deck gameId={gameId} gameState={gameState} />
+
       {gameState.scoringDice.length > 0 && (
         <div className="dice-section set-aside-section">
           <h2>Set Aside: {gameState.turnScore} points</h2>

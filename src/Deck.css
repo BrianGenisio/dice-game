@@ -1,0 +1,50 @@
+.deck-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.card {
+  width: 100px;
+  height: 150px;
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer; /* Makes the cursor a pointer when hovering over the card */
+  position: relative; /* Needed for absolute positioning of tooltip */
+}
+
+.card:hover {
+  background-color: #f0f0f0; /* Adds a light grey background on hover */
+}
+
+.card.back {
+  background-color: #ccc;
+}
+
+.deck {
+  font-size: 14px;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden; /* Hide tooltip text by default */
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px; /* Increased padding */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%; /* Increased vertical offset */
+  left: 50%;
+  margin-left: -60px;
+  margin-bottom: 10px; /* Added margin at the bottom */
+}
+
+.card:hover .tooltiptext {
+  visibility: visible; /* Show tooltip text only on hover */
+}

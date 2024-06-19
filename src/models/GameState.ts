@@ -1,6 +1,7 @@
 import { DocumentReference, doc, FirestoreDataConverter, setDoc, getDoc } from 'firebase/firestore';
 import { getDb } from '../firebaseConfig';
 import { Player } from "./Player";
+import { Card } from './Card';
 
 // Constants
 const GAMES_COLLECTION = 'games';
@@ -18,6 +19,9 @@ export interface GameState {
   createdBy: string;
   scoringDice: number[];
   turnScore: number;
+  deck: Card[]; // Added deck field
+  currentCard: Card | null; // Added currentCard field
+  discardedCards: Card[]; // Added discardedCards field
 }
 
 // Firestore data converter for GameState

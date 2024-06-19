@@ -23,6 +23,9 @@ describe('GameInProgress', () => {
     createdBy: '1',
     scoringDice: [],
     turnScore: 0,
+    deck: [],
+    currentCard: null,
+    discardedCards: []
   };
 
   beforeEach(() => {

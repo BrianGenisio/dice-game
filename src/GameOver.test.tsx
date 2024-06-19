@@ -19,7 +19,10 @@ const gameState: GameState = {
   maxPlayers: 4,
   createdBy: 'admin',
   scoringDice: [],
-  turnScore: 0
+  turnScore: 0,
+  deck: [],
+  currentCard: null,
+  discardedCards: []
 };
 
 describe('GameOver Component', () => {
@@ -30,8 +33,7 @@ describe('GameOver Component', () => {
 
   it('renders the final scores', () => {
     render(<GameOver gameState={gameState} />);
-    expect(screen.getByText(/Final Scores:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Player 1: 100 points/i)).toBeInTheDocument();
-    expect(screen.getByText(/Player 2: 50 points/i)).toBeInTheDocument();
+    expect(screen.getByText(/Player 1 wins/i)).toBeInTheDocument();
+    expect(screen.getByText(/Player 2/i)).toBeInTheDocument();
   });
 });

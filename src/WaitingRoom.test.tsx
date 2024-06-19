@@ -26,6 +26,9 @@ describe('WaitingRoom Component', () => {
     turnState: 'rolling',
     scoringDice: [],
     turnScore: 0,
+    deck: [],
+    currentCard: null,
+    discardedCards: []
   };
 
   beforeEach(() => {

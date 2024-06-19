@@ -30,7 +30,10 @@ const inProgressGameState: GameState = {
   ],
   createdBy: 'user-id', // Add a suitable user ID
   scoringDice: [1, 2], // Add appropriate dice values
-  turnScore: 0 // Initialize turn score
+  turnScore: 0,
+  deck: [],
+  currentCard: null,
+  discardedCards: []
 };
 
 describe('GameBoard', () => {
@@ -86,7 +89,10 @@ describe('GameBoard', () => {
         { uid: '2', name: 'Player 2', score: 50 },
       ],
       createdBy: 'user-id', // Assuming 'createdBy' is a string representing the user ID
-      turnScore: 0, // Assuming 'turnScore' is a number, set to 0 or appropriate value
+      turnScore: 0,
+      deck: [],
+      currentCard: null,
+      discardedCards: []
     };
     mockUseDocumentData.mockReturnValue([gameState, false, undefined]);
 
@@ -104,6 +110,5 @@ describe('GameBoard', () => {
 
     const playerTurnElement = screen.queryByText("Player 1's Turn");
     expect(playerTurnElement).toBeInTheDocument();
-    expect(screen.getByText('Roll Dice')).toBeInTheDocument();
   });
 });

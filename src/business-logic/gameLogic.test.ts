@@ -28,7 +28,10 @@ describe('rollDice', () => {
       createdBy: '1',
       scoringDice: [],
       turnScore: 0,
-      turnState: 'rolling', // Changed this line
+      turnState: 'rolling',
+      deck: [],
+      currentCard: null,
+      discardedCards: []
     };
 
     let gameState = preRoll(initialGameState, "1");
@@ -49,6 +52,9 @@ describe('rollDice', () => {
       scoringDice: [],
       turnScore: 0,
       turnState: 'settingAside',
+      currentCard: null,
+      deck: [],
+      discardedCards: [], // Added this line
     });
   });
 });
@@ -83,7 +89,10 @@ describe('createGame', () => {
       createdBy: 'abc',
       scoringDice: [],
       turnScore: 0,
-      turnState: 'rolling', // Added this line
+      turnState: 'rolling',
+      currentCard: null,
+      deck: expect.any(Array),
+      discardedCards: [] // Added this line
     });
   });
 });
@@ -101,7 +110,10 @@ describe('addPlayer', () => {
       players: [],
       scoringDice: [],
       turnScore: 0,
-      turnState: 'rolling', // Added this line
+      turnState: 'rolling',
+      deck: [],
+      currentCard: null,
+      discardedCards: []
     };
 
     const gameState = addPlayer(initialGameState, 'Player2', "abc");
@@ -116,13 +128,14 @@ describe('addPlayer', () => {
 
 describe('setAsideDice', () => {
   let initialGameState: GameState;
-
   beforeEach(() => {
     initialGameState = {
       diceValues: [1, 2, 3, 4, 5, 6],
       currentPlayer: 1,
       rolling: false,
       scoreGoal: 100,
+      deck: [],
+      currentCard: null,
       maxPlayers: 4,
       players: [
         { uid: 'player1', name: 'Player 1', score: 0 },
@@ -132,7 +145,8 @@ describe('setAsideDice', () => {
       createdBy: 'player1',
       scoringDice: [],
       turnScore: 0,
-      turnState: 'rolling', // Added this line
+      turnState: 'rolling',
+      discardedCards: [] // Added this line
     };
   });
 

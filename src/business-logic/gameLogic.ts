@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GameState } from '../models/GameState';
 import { Player } from "../models/Player";
+import { Card, cards } from '../models/Card';
 
 const NUMBER_OF_DICE = 6;
 const INITIAL_DICE_VALUE = 1;
@@ -44,7 +45,10 @@ export const createGame = (maxPlayers: number, scoreGoal: number, createdBy: str
     turnState: 'rolling',
     createdBy,
     scoringDice: [],
-    turnScore: 0
+    turnScore: 0,
+    deck: createAndShuffleDeck(), // Add shuffled deck
+    currentCard: null,
+    discardedCards: []
   };
   return { gameId, initialState };
 };
@@ -195,5 +199,45 @@ export const scoreDice = (dice: number[]): { totalScore: number, unscoredDice: n
     totalScore,
     unscoredDice,
     scoringDetails
+  };
+};
+
+// Function to create and shuffle the deck
+export function createAndShuffleDeck(): Card[] {
+  const deck: Card[] = [];
+
+  // Add cards to the deck based on their quantity
+  cards.forEach(card => {
+    for (let i = 0; i < card.quantity; i++) {
+      deck.push({ ...card });
+    }
+  });
+
+  // Shuffle the deck using Fisher-Yates algorithm
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+
+  return deck;
+}
+
+export const drawCard = (gameState: GameState): GameState => {
+  if (gameState.deck.length === 0) {
+    if (gameState.discardedCards.length === 0) {
+      throw new Error('No cards left in the deck or discard pile');
+    }
+    gameState.deck = createAndShuffleDeck();
+    gameState.discardedCards = [];
+  }
+
+  const currentCard = gameState.deck.pop();
+  const discardedCards = gameState.currentCard ? [...gameState.discardedCards, gameState.currentCard] : gameState.discardedCards;
+
+  return {
+    ...gameState,
+    currentCard: currentCard ?? null,
+    deck: gameState.deck,
+    discardedCards
   };
 };
