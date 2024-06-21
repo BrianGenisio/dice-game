@@ -15,7 +15,7 @@ export interface GameState {
   maxPlayers: number;
   players: Player[];
   macroState: 'waiting' | 'inProgress' | 'gameOver';
-  turnState: 'rolling' | 'settingAside' | 'deciding';
+  turnState: 'drawing' | 'rolling' | 'settingAside' | 'deciding';
   createdBy: string;
   scoringDice: number[];
   turnScore: number;

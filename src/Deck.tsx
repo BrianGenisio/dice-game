@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { GameState } from './models/GameState';
 import { drawCard } from './business-logic/gameLogic';
 import { saveGameState } from './models/GameState';
+import { getUserId } from './models/Player';
 import './Deck.css';
 
 type DeckProps = {
@@ -10,12 +11,16 @@ type DeckProps = {
 };
 
 const Deck: React.FC<DeckProps> = ({ gameState, gameId }) => {
-  const { currentCard, deck = [] } = gameState;
+  const { currentCard, deck = [], turnState } = gameState;
 
   const handleDeckClick = useCallback(async () => {
-    const updatedGameState = drawCard(gameState);
-    await saveGameState(gameId, updatedGameState);
-  }, [gameState, gameId]);
+    const userId = getUserId(); // Ensure you import getUserId from the appropriate module
+    const currentPlayerId = gameState.players[gameState.currentPlayer - 1]?.uid;
+    if (turnState === "drawing" && userId === currentPlayerId) {
+      const updatedGameState = drawCard(gameState);
+      await saveGameState(gameId, updatedGameState);
+    }
+  }, [gameState, gameId, turnState]);
 
   return (
     <div className="deck-container" onClick={handleDeckClick}>

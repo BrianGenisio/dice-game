@@ -78,8 +78,14 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       <button onClick={toggleHelpModal} className="help-button">Help</button>
       <HelpModal isOpen={isHelpModalOpen} onClose={toggleHelpModal} />
 
-      {/* Add the Deck component here */}
-      <Deck gameId={gameId} gameState={gameState} />
+      {gameState.turnState === "drawing" ? (
+        <div>
+          <h3>Draw a card!</h3>
+          <Deck gameId={gameId} gameState={gameState} />
+        </div>
+      ) : (
+        <Deck gameId={gameId} gameState={gameState} />
+      )}
 
       {gameState.scoringDice.length > 0 && (
         <div className="dice-section set-aside-section">
@@ -121,11 +127,11 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
         )}
         <div>
           {hasCutTheCheese && <h3>💨 You cut the cheese 💨</h3>}
-          {hasPassedTheCheese && (
+          {hasPassedTheCheese && gameState.currentCard && (
             <h3>
               🎉 Congratulations! You passed the cheese! 🎉
               <br />
-              You got a 500 point bonus!
+              You got a {gameState.currentCard.bonus} point bonus!
             </h3>
           )}
         </div>

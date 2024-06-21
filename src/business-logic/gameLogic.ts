@@ -29,7 +29,7 @@ export const startGame = (gameState: GameState, currentUserId: string): GameStat
     throw new Error('Only the game creator can start the game');
   }
 
-  return { ...gameState, macroState: 'inProgress' };
+  return { ...gameState, macroState: 'inProgress', turnState: 'drawing' };
 };
 
 export const createGame = (maxPlayers: number, scoreGoal: number, createdBy: string): { gameId: string, initialState: GameState } => {
@@ -58,8 +58,8 @@ const rollDiceValues = (numDice: number): number[] => Array.from({ length: numDi
 const calculateNewScores = (gameState: GameState): Player[] => {
   const newPlayers = [...gameState.players];
   newPlayers[gameState.currentPlayer - 1].score += gameState.turnScore;
-  if (gameState.diceValues.length === 0) {
-    newPlayers[gameState.currentPlayer - 1].score += 500;  // Bonus for passing the cheese
+  if (gameState.diceValues.length === 0 && gameState.currentCard) {
+    newPlayers[gameState.currentPlayer - 1].score += gameState.currentCard.bonus;  // Use bonus from currentCard
   }
   return newPlayers;
 };
@@ -108,7 +108,7 @@ export const endTurn = (gameState: GameState, cutTheCheese: boolean): GameState 
     turnScore: 0,
     scoringDice: [],
     diceValues: [1, 1, 1, 1, 1, 1],  // Reset diceValues to six dice with value 1
-    turnState: 'rolling'  // Set turnState back to rolling
+    turnState: 'drawing'  // Set turnState back to drawing
   };
 };
 
@@ -223,6 +223,10 @@ export function createAndShuffleDeck(): Card[] {
 }
 
 export const drawCard = (gameState: GameState): GameState => {
+  if (gameState.turnState !== 'drawing') {
+    return gameState; // Return the current state if it's not the drawing phase
+  }
+
   if (gameState.deck.length === 0) {
     if (gameState.discardedCards.length === 0) {
       throw new Error('No cards left in the deck or discard pile');
@@ -238,6 +242,7 @@ export const drawCard = (gameState: GameState): GameState => {
     ...gameState,
     currentCard: currentCard ?? null,
     deck: gameState.deck,
-    discardedCards
+    discardedCards,
+    turnState: 'rolling'  // Set turnState to "rolling"
   };
 };
