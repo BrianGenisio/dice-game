@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Dice from './Dice';
-import { preRoll, postRoll, setAsideDice, endTurn, scoreDice } from './business-logic/gameLogic';
+import { preRoll, postRoll, setAsideDice, endTurn, scoreDice, hasPassedTheCheese, hasCutTheCheese, canEndTurn } from './business-logic/gameLogic';
 import { GameState, saveGameState } from './models/GameState';
 import { getUserId } from './models/Player';
 import './Home.css'; // Import the CSS file
@@ -23,10 +23,10 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
 
   const selectedDiceValues = selectedDice.map(index => gameState.diceValues[index]);
   const { totalScore: selectedDiceScore, unscoredDice, scoringDetails } = scoreDice(selectedDiceValues);
-  const { totalScore: diceValuesScore } = scoreDice(gameState.diceValues);
 
-  const hasPassedTheCheese = gameState.diceValues.length === 0;
-  const hasCutTheCheese = gameState.turnState === 'settingAside' && (diceValuesScore === 0 || hasPassedTheCheese);
+  const hasPassedTheCheeseFlag = hasPassedTheCheese(gameState);
+  const hasCutTheCheeseFlag = hasCutTheCheese(gameState);
+  const shouldShowEndTurnButton = canEndTurn(gameState);
 
   const currentPlayer = gameState.currentPlayer;
   const rolling = gameState.rolling;
@@ -64,7 +64,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
   };
 
   const handleEndTurn = async () => {
-    const newGameState = endTurn(gameState, hasCutTheCheese);
+    const newGameState = endTurn(gameState, hasCutTheCheeseFlag);
     await saveGameState(gameId, newGameState);
   };
 
@@ -126,8 +126,8 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
           </div>
         )}
         <div>
-          {hasCutTheCheese && <h3>💨 You cut the cheese 💨</h3>}
-          {hasPassedTheCheese && gameState.currentCard && (
+          {hasCutTheCheeseFlag && <h3>💨 You cut the cheese 💨</h3>}
+          {hasPassedTheCheeseFlag && gameState.currentCard && (
             <h3>
               🎉 Congratulations! You passed the cheese! 🎉
               <br />
@@ -138,7 +138,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
       </div>
       {isCurrentUser && (
         <div className="button-container">
-          { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheese && (
+          { (gameState.turnState === 'rolling' || gameState.turnState === 'deciding') && !hasPassedTheCheeseFlag && (
             <button
               className="create-game-button"
               onClick={handleRollDice}
@@ -147,7 +147,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
               Roll Dice
             </button>
           )}
-          {gameState.turnState === 'settingAside' && !hasCutTheCheese && (
+          {gameState.turnState === 'settingAside' && !hasCutTheCheeseFlag && (
             <button
               className="create-game-button"
               onClick={handleSetAsideDice}
@@ -156,7 +156,7 @@ const GameInProgress: React.FC<GameInProgressProps> = ({
               Set Aside Selected Dice
             </button>
           )}
-          {(gameState.turnState === 'deciding' || hasCutTheCheese) && (
+          {shouldShowEndTurnButton && (
             <button
               className="create-game-button"
               onClick={handleEndTurn}

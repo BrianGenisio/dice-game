@@ -95,8 +95,11 @@ export const postRoll = (gameState: GameState): GameState => {
 };
 
 export const endTurn = (gameState: GameState, cutTheCheese: boolean): GameState => {
-  let newPlayers = cutTheCheese ? gameState.players : calculateNewScores(gameState);
+  if (!canEndTurn(gameState)) {
+    throw new Error('You must fill the card requirements before ending the turn');
+  }
 
+  let newPlayers = cutTheCheese ? gameState.players : calculateNewScores(gameState);
   const newGameOver = newPlayers[gameState.currentPlayer - 1].score >= gameState.scoreGoal;
   const newCurrentPlayer = determineNextPlayer(gameState, newGameOver);
 
@@ -245,4 +248,26 @@ export const drawCard = (gameState: GameState): GameState => {
     discardedCards,
     turnState: 'rolling'  // Set turnState to "rolling"
   };
+};
+
+export const hasPassedTheCheese = (gameState: GameState): boolean => {
+  return gameState.diceValues.length === 0;
+};
+
+export const hasCutTheCheese = (gameState: GameState): boolean => {
+  const { totalScore: diceValuesScore } = scoreDice(gameState.diceValues);
+  return gameState.turnState === 'settingAside' && (diceValuesScore === 0 || hasPassedTheCheese(gameState));
+};
+
+export const canEndTurn = (gameState: GameState): boolean => {
+  if (hasPassedTheCheese(gameState) || hasCutTheCheese(gameState)) {
+    return true;
+  }
+
+  const mustPassButHasntPassed = gameState.currentCard?.kind === 'MustPass' && gameState.diceValues.length > 0;
+  if (mustPassButHasntPassed) {
+    return false;
+  }
+
+  return gameState.turnState === 'deciding';
 };

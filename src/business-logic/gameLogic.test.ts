@@ -1,10 +1,29 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GameState } from "../models/GameState";
-import { addPlayer, createGame, postRoll, preRoll, setAsideDice, scoreDice } from "./gameLogic";
+import { addPlayer, createGame, postRoll, preRoll, setAsideDice, scoreDice, hasPassedTheCheese, hasCutTheCheese, canEndTurn } from "./gameLogic";
 
 jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));
+
+function createSimpleGameState(): GameState {
+    return {
+        diceValues: [],
+        currentPlayer: 1,
+        rolling: false,
+        scoreGoal: 100,
+        maxPlayers: 4,
+        players: [],
+        macroState: 'waiting',
+        createdBy: 'testUser',
+        scoringDice: [],
+        turnScore: 0,
+        turnState: 'rolling',
+        deck: [],
+        currentCard: null,
+        discardedCards: []
+    };
+}
 
 describe('rollDice', () => {
   beforeEach(() => {
@@ -243,5 +262,65 @@ describe('scoreDice', () => {
       unscoredDice: [2, 3, 4, 6],
       scoringDetails: []
     });
+  });
+});
+
+describe('hasPassedTheCheese', () => {
+  it('should return true if no dice values are left', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [];
+    expect(hasPassedTheCheese(gameState)).toBe(true);
+  });
+
+  it('should return false if there are dice values', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [1, 2, 3];
+    expect(hasPassedTheCheese(gameState)).toBe(false);
+  });
+});
+
+describe('hasCutTheCheese', () => {
+  it('should return true if no score from dice and turn state is settingAside', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [2, 3, 4];
+    gameState.turnState = 'settingAside';
+    expect(hasCutTheCheese(gameState)).toBe(true);
+  });
+
+  it('should return false if there is a score from dice or turn state is not settingAside', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [1, 5];
+    gameState.turnState = 'rolling';
+    expect(hasCutTheCheese(gameState)).toBe(false);
+  });
+});
+
+describe('canEndTurn', () => {
+  it('should return true if conditions to pass or cut the cheese are met', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [];
+    gameState.turnState = 'deciding';
+    gameState.currentCard = {
+      kind: 'MustPass',
+      name: 'Dummy Name',
+      bonus: 0,
+      description: 'Dummy Description',
+      quantity: 1
+    };
+    expect(canEndTurn(gameState)).toBe(true);
+  });
+
+  it('should return false if must pass but hasn\'t passed', () => {
+    const gameState = createSimpleGameState();
+    gameState.diceValues = [1, 2, 3];
+    gameState.turnState = 'deciding';
+    gameState.currentCard = {
+      kind: 'MustPass',
+      name: 'Dummy Name',
+      bonus: 0,
+      description: 'Dummy Description',
+      quantity: 1
+    };
+    expect(canEndTurn(gameState)).toBe(false);
   });
 });
